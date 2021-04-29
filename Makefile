@@ -1,6 +1,6 @@
 CXX      := -g++
 CXXFLAGS := -std=c++14 -pedantic-errors -Wall -Wextra #-Werror
-LDFLAGS  := -lstdc++ -lm # -L/usr/lib
+LDFLAGS  := -lstdc++ -lm -lGL -lGLU -lGLEW -lglfw #-L/usr/lib
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
@@ -36,7 +36,10 @@ $(APP_DIR)/$(TARGET): $(OBJECTS)
 
 -include $(DEPENDENCIES)
 
-.PHONY: all build clean debug release archive info
+.PHONY: all run build clean debug release archive info
+
+run: all
+	$(APP_DIR)/$(TARGET)
 
 build:
 	@mkdir -p $(APP_DIR)
