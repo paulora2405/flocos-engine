@@ -23,7 +23,8 @@ SUBMISSIONS := 									\
 	original.txt
 
 all: build $(APP_DIR)/$(TARGET)
-	@ln -s $(APP_DIR)/$(TARGET) $(TARGET)
+	-@rm -rf $(TARGET)
+	-@ln -s $(APP_DIR)/$(TARGET) $(TARGET)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
