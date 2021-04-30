@@ -4,12 +4,11 @@ LDFLAGS  := -lstdc++ -lm -lGL -lGLU -lGLEW -lglfw #-L/usr/lib
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
-TARGET   := main
+TARGET   := main.out
 INCLUDE  := -Iinclude/
-SRC      :=                     \
-	$(wildcard src/module1/*.cpp) \
-	$(wildcard src/module2/*.cpp) \
-	$(wildcard src/*.cpp)         \
+SRC      :=                      \
+	$(wildcard src/graphics/*.cpp) \
+	$(wildcard src/*.cpp)          \
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES  \
