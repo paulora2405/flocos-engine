@@ -8,18 +8,17 @@ TARGET   := main.out
 INCLUDE  := -Iinclude/
 SRC      :=                      \
 	$(wildcard src/graphics/*.cpp) \
+	$(wildcard src/logging/*.cpp) \
 	$(wildcard src/*.cpp)          \
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES  \
          := $(OBJECTS:.o=.d)
 
-ARCHIVE  := cal-tf-test
+ARCHIVE  := doom-slayer-source-code
 SUBMISSIONS := 									\
-	src/ include/	graficos/				\
+	src/ include/	res/						\
 	LICENSE README.md Makefile 		\
-	ComplexidadeTrabalho.pdf			\
-	original.txt
 
 all: build $(APP_DIR)/$(TARGET)
 	-@rm -rf $(TARGET)
