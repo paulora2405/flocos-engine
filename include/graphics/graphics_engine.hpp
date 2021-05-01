@@ -4,12 +4,23 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <signal.h>
 #include <stdlib.h>
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include "logging/easylogging++.h"
+
+#define ASSERT(x) \
+  if(!(x)) raise(SIGTRAP);
+#define GLCALL(x)         \
+  this->geClearGlError(); \
+  x;                      \
+  ASSERT(this->geLogGlCall());
 
 /*!
  * @brief Graphics Engine Namespace
@@ -33,7 +44,7 @@ public:
    * @param[in] width Width of the window.
    * @param[in] height Height of the window.
    */
-  GraphicsEngine(unsigned short width, unsigned short height);
+  GraphicsEngine(const unsigned short& width, const unsigned short& height);
   /*!
    */
   ~GraphicsEngine();
@@ -55,6 +66,16 @@ public:
 
   // TODO
   void geMainLoop();
+
+  /*!
+   * @brief Calls glGetError() until there are no errors.
+   */
+  void geClearGlError();
+
+  /*!
+   * @brief Asserts errors
+   */
+  bool geLogGlCall();
 
   // private:
   /*!

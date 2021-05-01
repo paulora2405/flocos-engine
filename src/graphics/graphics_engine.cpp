@@ -2,67 +2,43 @@
 
 namespace GE {
 
-GraphicsEngine::GraphicsEngine(unsigned short width, unsigned short height)
-    : m_width{width}, m_height{height} {
-  /* Initialize GLFW library */
-  if(!glfwInit()) {
-    std::cerr << "ERROR: GLFW COULD NOT INITIALIZE" << std::endl;
-    return;
-  }
-
-  /* Create a windowed mode window and its OpenGL context */
-  std::string window_name{
-      std::to_string(m_width) + "," + std::to_string(m_height)};
-  m_window =
-      glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
-  if(!m_window) {
-    glfwTerminate();
-    return;
-  }
-
-  /* Make the window's context current */
-  glfwMakeContextCurrent(m_window);
-
-  /* Initialize GLEW library */
-  if(glewInit() != GLEW_OK) {
-    std::cerr << "ERROR: GLEW COULD NOT INITIALIZE" << std::endl;
-    return;
-  }
-
-  /* Print OpenGL Version */
-  std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-
-  /* Window initiated successfully */
-  std::cout << "Window initiated successfully" << std::endl;
-}
-
-GraphicsEngine::~GraphicsEngine() {
-  glfwTerminate();
-  std::cout << "Window terminated successfully" << std::endl;
-}
-
-GLFWwindow* GraphicsEngine::geGetWindow() {
-  return m_window;
-}
-
 void GraphicsEngine::geMainLoop() {
+  /* Positions of the vertex */
+  float positions[] = {
+      -0.5f, -0.5f,  // 0
+      0.5f,  -0.5f,  // 1
+      0.5f,  0.5f,   // 2
+      -0.5f, 0.5f,   // 3
+  };
+  unsigned int indices[] = {
+      0, 1, 2,  // first triangle
+      2, 3, 0,  // second triangle
+  };
+
   /* Unique buffer id */
   unsigned int buffer;
-  /* Positions of the vertex */
-  float positions[] = {-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, -0.5f};
   /* Generate one buffer and put its id in the variable */
   glGenBuffers(1, &buffer);
   /* Binding means selecting a buffer */
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   /* Puts data in the buffer */
-  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+  glBufferData(
+      GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
+
   /* Enable the attributes */
   glEnableVertexAttribArray(0);
   /* Defines the vertex attributes */
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
+  unsigned int ibo;
+  glGenBuffers(1, &ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferData(
+      GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
+      GL_STATIC_DRAW);
+
   GE::ShaderProgramSource source =
-      this->geParseShader("res/shaders/triangle.shader");
+      this->geParseShader("res/shaders/triangle_vf.shader");
 
   unsigned int shader =
       this->geCreateShader(source.VertexSource, source.FragmentSource);
@@ -74,7 +50,7 @@ void GraphicsEngine::geMainLoop() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     /* Modern OpenGL drawing */
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     /* Swap front and back buffers */
     glfwSwapBuffers(this->m_window);
@@ -93,7 +69,12 @@ ShaderProgramSource GraphicsEngine::geParseShader(const std::string& path) {
     exit(EXIT_FAILURE);
   }
 
-  enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
+  enum class ShaderType
+  {
+    NONE = -1,
+    VERTEX = 0,
+    FRAGMENT = 1
+  };
 
   std::string line;
   std::stringstream ss[2];
@@ -127,10 +108,12 @@ unsigned int GraphicsEngine::geCompileShader(
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
     char* message = (char*)alloca(length * sizeof(char));
     glGetShaderInfoLog(id, length, &length, message);
-    std::cout << "Failed to compile"
-              << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << "shader"
-              << std::endl;
-    std::cout << message << std::endl;
+    LOG(ERROR) << "FAILED TO COMPILE "
+               << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
+               << " SHADER";
+    /* Strips the '\n' included in the string */
+    message[strlen(message) - 1] = '\0';
+    LOG(ERROR) << message;
     glDeleteShader(id);
     return 0;
   }
@@ -154,6 +137,64 @@ unsigned int GraphicsEngine::geCreateShader(
   glDeleteShader(fs);
 
   return program;
+}
+
+GLFWwindow* GraphicsEngine::geGetWindow() {
+  return m_window;
+}
+
+void GraphicsEngine::geClearGlError() {
+  while(glGetError() != GL_NO_ERROR) {
+  }
+}
+
+bool GraphicsEngine::geLogGlCall() {
+  while(GLenum error = glGetError()) {
+    LOG(ERROR) << "[OPENGL ERROR]:" << error;
+    return false;
+  }
+  return true;
+}
+
+GraphicsEngine::~GraphicsEngine() {
+  glfwTerminate();
+  LOG(INFO) << "Window terminated successfully";
+}
+
+GraphicsEngine::GraphicsEngine(
+    const unsigned short& width, const unsigned short& height)
+    : m_width{width}, m_height{height} {
+  LOG(INFO) << "Initializing the GraphicsEngine instance";
+  /* Initialize GLFW library */
+  if(!glfwInit()) {
+    LOG(ERROR) << "GLFW COULD NOT INITIALIZE";
+    return;
+  }
+
+  /* Create a windowed mode window and its OpenGL context */
+  std::string window_name{
+      std::to_string(m_width) + "," + std::to_string(m_height)};
+  m_window =
+      glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
+  if(!m_window) {
+    glfwTerminate();
+    return;
+  }
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(m_window);
+
+  /* Initialize GLEW library */
+  if(glewInit() != GLEW_OK) {
+    LOG(ERROR) << "ERROR: GLEW COULD NOT INITIALIZE";
+    return;
+  }
+
+  /* Print OpenGL Version */
+  LOG(INFO) << "OpenGL Version: " << glGetString(GL_VERSION);
+
+  /* Window initiated successfully */
+  LOG(INFO) << "Window initiated successfully";
 }
 
 }  // namespace GE
