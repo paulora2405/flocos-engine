@@ -1,6 +1,7 @@
 # Custom
 .vscode/
 .clang-format
+*.log
 
 # Prerequisites
 *.d
