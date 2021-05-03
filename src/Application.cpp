@@ -20,18 +20,23 @@ int main(int argc, char const* argv[]) {
   // el::Loggers::reconfigureAllLoggers(conf);
 
   //
-  unsigned short WIDTH;
-  unsigned short HEIGHT;
-  if(argc == 1)
-    WIDTH = 800, HEIGHT = 640;
-  else if(argc == 3)
-    WIDTH = atoi(argv[1]), HEIGHT = atoi(argv[2]);
-  else {
-    std::cerr << "ARGUMENT ERROR\n";
-    return EXIT_FAILURE;
+  switch(argc) {
+    case 1: {
+      GE::GraphicsEngine ge{};
+      ge.geMainLoop();
+      break;
+    }
+
+    case 3: {
+      unsigned short w = atoi(argv[1]);
+      unsigned short h = atoi(argv[2]);
+      GE::GraphicsEngine ge{w, h};
+      ge.geMainLoop();
+      break;
+    }
+
+    default: {
+      break;
+    }
   }
-
-  GE::GraphicsEngine ge(WIDTH, HEIGHT);
-
-  ge.geMainLoop();
 }
