@@ -3,7 +3,6 @@
 namespace GE {
 
 void GraphicsEngine::geMainLoop() {
-  /* Positions of the vertex */
   float positions[] = {
       -0.5f, -0.5f,  // 0
       0.5f,  -0.5f,  // 1
@@ -15,42 +14,59 @@ void GraphicsEngine::geMainLoop() {
       2, 3, 0,  // second triangle
   };
 
-  /* Unique buffer id */
-  unsigned int buffer;
-  /* Generate one buffer and put its id in the variable */
-  glGenBuffers(1, &buffer);
-  /* Binding means selecting a buffer */
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  /* Puts data in the buffer */
-  glBufferData(
-      GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
+  /* Vertex Array Object id */
+  unsigned int vao;
+  GLCALL(glGenVertexArrays(1, &vao));
+  GLCALL(glBindVertexArray(vao));
 
-  /* Enable the attributes */
-  glEnableVertexAttribArray(0);
-  /* Defines the vertex attributes */
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+  VertexArray va;
+  VertexBuffer vb{positions, 4 * 2 * sizeof(float)};
 
-  unsigned int ibo;
-  glGenBuffers(1, &ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(
-      GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
-      GL_STATIC_DRAW);
+  VertexBufferLayout layout;
+  layout.push<float>(2);
+  va.addBuffer(vb, layout);
 
-  GE::ShaderProgramSource source =
+  IndexBuffer ib{indices, 6};
+
+  ShaderProgramSource source =
       this->geParseShader("res/shaders/triangle_vf.shader");
-
   unsigned int shader =
       this->geCreateShader(source.VertexSource, source.FragmentSource);
-  glUseProgram(shader);
+  GLCALL(glUseProgram(shader));
+
+  /* Locates the uniform in the shader and returns its unique id */
+  GLCALL(int location = glGetUniformLocation(shader, "u_Color"));
+  ASSERT(location != -1);
+
+  /* Unbinds everything */
+  GLCALL(glBindVertexArray(0));
+  GLCALL(glUseProgram(0));
+  GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
+  float r = 0.0f, g = 0.0f, b = 0.0f;
 
   /* Loop until the user closes the window */
   while(!glfwWindowShouldClose(this->m_window)) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
+    /* Binds shader */
+    GLCALL(glUseProgram(shader));
+
+    /* Sets the values of the uniform */
+    GLCALL(glUniform4f(location, r, g, b, 1.0f));
+
+    /* Binds vertex array and index buffer */
+    GLCALL(va.bind());
+    GLCALL(ib.bind());
+
     /* Modern OpenGL drawing */
     GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+    r = r + 0.1f > 1.0f ? 0.0f : r + 0.05f;
+    g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
+    b = b + 0.1f > 1.0f ? 0.0f : b + 0.05f;
 
     /* Swap front and back buffers */
     glfwSwapBuffers(this->m_window);
@@ -59,7 +75,7 @@ void GraphicsEngine::geMainLoop() {
     glfwPollEvents();
   }
 
-  glDeleteProgram(shader);
+  GLCALL(glDeleteProgram(shader));
 }
 
 ShaderProgramSource GraphicsEngine::geParseShader(const std::string& path) {
@@ -139,21 +155,8 @@ unsigned int GraphicsEngine::geCreateShader(
   return program;
 }
 
-GLFWwindow* GraphicsEngine::geGetWindow() {
+GLFWwindow* GraphicsEngine::geGetWindow() const {
   return m_window;
-}
-
-void GraphicsEngine::geClearGlError() {
-  while(glGetError() != GL_NO_ERROR) {
-  }
-}
-
-bool GraphicsEngine::geLogGlCall() {
-  while(GLenum error = glGetError()) {
-    LOG(ERROR) << "[OPENGL ERROR]:" << error;
-    return false;
-  }
-  return true;
 }
 
 GraphicsEngine::~GraphicsEngine() {
@@ -161,15 +164,18 @@ GraphicsEngine::~GraphicsEngine() {
   LOG(INFO) << "Window terminated successfully";
 }
 
-GraphicsEngine::GraphicsEngine(
-    const unsigned short& width, const unsigned short& height)
-    : m_width{width}, m_height{height} {
+void GraphicsEngine::geInit() {
   LOG(INFO) << "Initializing the GraphicsEngine instance";
   /* Initialize GLFW library */
   if(!glfwInit()) {
     LOG(ERROR) << "GLFW COULD NOT INITIALIZE";
     return;
   }
+
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);  // not working
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);  // not working
+  // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   /* Create a windowed mode window and its OpenGL context */
   std::string window_name{
@@ -184,6 +190,9 @@ GraphicsEngine::GraphicsEngine(
   /* Make the window's context current */
   glfwMakeContextCurrent(m_window);
 
+  /* Sincronizes the framerate with the monitors refresh rate */
+  glfwSwapInterval(1);
+
   /* Initialize GLEW library */
   if(glewInit() != GLEW_OK) {
     LOG(ERROR) << "ERROR: GLEW COULD NOT INITIALIZE";
@@ -195,6 +204,12 @@ GraphicsEngine::GraphicsEngine(
 
   /* Window initiated successfully */
   LOG(INFO) << "Window initiated successfully";
+}
+
+GraphicsEngine::GraphicsEngine(
+    const unsigned short& width, const unsigned short& height)
+    : m_width{width}, m_height{height} {
+  this->geInit();
 }
 
 }  // namespace GE

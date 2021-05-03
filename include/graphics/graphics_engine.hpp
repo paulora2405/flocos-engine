@@ -1,6 +1,5 @@
 #ifndef GRAPHICS_ENGINE_HPP
 #define GRAPHICS_ENGINE_HPP
-// -*- lsst-c++ -*-
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,18 +12,12 @@
 #include <sstream>
 #include <string>
 
+#include "graphics/index_buffer.hpp"
+#include "graphics/renderer.hpp"
+#include "graphics/vertex_array.hpp"
+#include "graphics/vertex_buffer.hpp"
 #include "logging/easylogging++.h"
 
-#define ASSERT(x) \
-  if(!(x)) raise(SIGTRAP);
-#define GLCALL(x)         \
-  this->geClearGlError(); \
-  x;                      \
-  ASSERT(this->geLogGlCall());
-
-/*!
- * @brief Graphics Engine Namespace
- */
 namespace GE {
 struct ShaderProgramSource {
   std::string VertexSource;
@@ -39,13 +32,14 @@ private:
 
 public:
   /*!
-   * @brief Initializes GLFW, creates a Window, makes window the current
-   * context, and then initializes GLEW.
-   * @param[in] width Width of the window.
-   * @param[in] height Height of the window.
+   * @brief Defines width and height members with parameters and calls geInit().
+   * @param[in] width Width of the window (defaults to 800).
+   * @param[in] height Height of the window (defaults to 640).
    */
-  GraphicsEngine(const unsigned short& width, const unsigned short& height);
+  GraphicsEngine(
+      const unsigned short& width = 800, const unsigned short& height = 640);
   /*!
+   * @brief Terminates the GLFW Window.
    */
   ~GraphicsEngine();
 
@@ -62,22 +56,18 @@ public:
   /*!
    * @returns Pointer to the window's instance.
    */
-  GLFWwindow* geGetWindow();
+  GLFWwindow* geGetWindow() const;
 
   // TODO
   void geMainLoop();
 
+private:
   /*!
-   * @brief Calls glGetError() until there are no errors.
+   * @brief Initializes GLFW, creates a Window, makes window the current
+   * context, and then initializes GLEW.
    */
-  void geClearGlError();
+  void geInit();
 
-  /*!
-   * @brief Asserts errors
-   */
-  bool geLogGlCall();
-
-  // private:
   /*!
    * @brief Parses a dual-shader file (vertex and fragment shader in the same
    * file) to a ShaderProgramSource struct.
