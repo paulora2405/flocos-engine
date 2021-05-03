@@ -14,11 +14,6 @@ void GraphicsEngine::geMainLoop() {
       2, 3, 0,  // second triangle
   };
 
-  /* Vertex Array Object id */
-  unsigned int vao;
-  GLCALL(glGenVertexArrays(1, &vao));
-  GLCALL(glBindVertexArray(vao));
-
   VertexArray va;
   VertexBuffer vb{positions, 4 * 2 * sizeof(float)};
 
@@ -28,21 +23,15 @@ void GraphicsEngine::geMainLoop() {
 
   IndexBuffer ib{indices, 6};
 
-  ShaderProgramSource source =
-      this->geParseShader("res/shaders/triangle_vf.shader");
-  unsigned int shader =
-      this->geCreateShader(source.VertexSource, source.FragmentSource);
-  GLCALL(glUseProgram(shader));
-
-  /* Locates the uniform in the shader and returns its unique id */
-  GLCALL(int location = glGetUniformLocation(shader, "u_Color"));
-  ASSERT(location != -1);
+  Shader shader{"res/shaders/triangle_vf.shader"};
+  shader.bind();
+  shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
   /* Unbinds everything */
-  GLCALL(glBindVertexArray(0));
-  GLCALL(glUseProgram(0));
-  GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-  GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+  va.unbind();
+  vb.unbind();
+  ib.unbind();
+  shader.unbind();
 
   float r = 0.0f, g = 0.0f, b = 0.0f;
 
@@ -52,14 +41,12 @@ void GraphicsEngine::geMainLoop() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     /* Binds shader */
-    GLCALL(glUseProgram(shader));
-
+    shader.bind();
     /* Sets the values of the uniform */
-    GLCALL(glUniform4f(location, r, g, b, 1.0f));
-
+    shader.setUniform4f("u_Color", r, g, b, 1.0f);
     /* Binds vertex array and index buffer */
-    GLCALL(va.bind());
-    GLCALL(ib.bind());
+    va.bind();
+    ib.bind();
 
     /* Modern OpenGL drawing */
     GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
@@ -74,85 +61,6 @@ void GraphicsEngine::geMainLoop() {
     /* Poll for and process events */
     glfwPollEvents();
   }
-
-  GLCALL(glDeleteProgram(shader));
-}
-
-ShaderProgramSource GraphicsEngine::geParseShader(const std::string& path) {
-  std::ifstream istream(path);
-  if(!istream.is_open()) {
-    std::cerr << "FALHA AO ABRIR ARQUIVO " << path << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
-  enum class ShaderType
-  {
-    NONE = -1,
-    VERTEX = 0,
-    FRAGMENT = 1
-  };
-
-  std::string line;
-  std::stringstream ss[2];
-  ShaderType type = ShaderType::NONE;
-  while(getline(istream, line)) {
-    if(line.find("#shader") != std::string::npos) {
-      if(line.find("vertex") != std::string::npos)
-        type = ShaderType::VERTEX;
-
-      else if(line.find("fragment") != std::string::npos)
-        type = ShaderType::FRAGMENT;
-    } else {
-      ss[(int)type] << line << '\n';
-    }
-  }
-
-  return {ss[0].str(), ss[1].str()};
-}
-
-unsigned int GraphicsEngine::geCompileShader(
-    unsigned int type, const std::string& source) {
-  unsigned int id = glCreateShader(type);
-  const char* src = source.c_str();
-  glShaderSource(id, 1, &src, nullptr);
-  glCompileShader(id);
-
-  int result;
-  glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-  if(result == GL_FALSE) {
-    int length;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-    char* message = (char*)alloca(length * sizeof(char));
-    glGetShaderInfoLog(id, length, &length, message);
-    LOG(ERROR) << "FAILED TO COMPILE "
-               << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
-               << " SHADER";
-    /* Strips the '\n' included in the string */
-    message[strlen(message) - 1] = '\0';
-    LOG(ERROR) << message;
-    glDeleteShader(id);
-    return 0;
-  }
-
-  return id;
-}
-
-unsigned int GraphicsEngine::geCreateShader(
-    const std::string& vertexShader, const std::string& fragmentShader) {
-  unsigned int program = glCreateProgram();  // GLint is eq to uint
-
-  unsigned int vs = geCompileShader(GL_VERTEX_SHADER, vertexShader);
-  unsigned int fs = geCompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-  glAttachShader(program, vs);
-  glAttachShader(program, fs);
-  glLinkProgram(program);
-  glValidateProgram(program);
-
-  glDeleteShader(vs);
-  glDeleteShader(fs);
-
-  return program;
 }
 
 GLFWwindow* GraphicsEngine::geGetWindow() const {
@@ -179,7 +87,7 @@ void GraphicsEngine::geInit() {
 
   /* Create a windowed mode window and its OpenGL context */
   std::string window_name{
-      std::to_string(m_width) + "," + std::to_string(m_height)};
+      std::to_string(m_width) + "x" + std::to_string(m_height)};
   m_window =
       glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
   if(!m_window) {

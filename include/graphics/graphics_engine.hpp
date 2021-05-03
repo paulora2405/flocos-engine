@@ -14,15 +14,12 @@
 
 #include "graphics/index_buffer.hpp"
 #include "graphics/renderer.hpp"
+#include "graphics/shader.hpp"
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
 #include "logging/easylogging++.h"
 
 namespace GE {
-struct ShaderProgramSource {
-  std::string VertexSource;
-  std::string FragmentSource;
-};
 
 class GraphicsEngine {
 private:
@@ -67,31 +64,6 @@ private:
    * context, and then initializes GLEW.
    */
   void geInit();
-
-  /*!
-   * @brief Parses a dual-shader file (vertex and fragment shader in the same
-   * file) to a ShaderProgramSource struct.
-   * @param[in] path Path to the shader file.
-   * @returns A ShaderProgramSource struct.
-   */
-  ShaderProgramSource geParseShader(const std::string& path);
-
-  /*!
-   * @brief Compiles a Shader with a specific type from its source code.
-   * @param[in] type GLEW Shader type, e.g. GL_VERTEX_SHADER or
-   * GL_FRAGMENT_SHADER.
-   * @returns The program id.
-   */
-  unsigned int geCompileShader(unsigned int type, const std::string& source);
-
-  /*!
-   * @brief Creates a program and attaches the vertex and fragment shader to it.
-   * @param[in] vertexShader Vertex Shader source code.
-   * @param[in] fragmentShader Fragment Shader source code.
-   * @returns The program id.
-   */
-  unsigned int geCreateShader(
-      const std::string& vertexShader, const std::string& fragmentShader);
 };
 
 }  // namespace GE
