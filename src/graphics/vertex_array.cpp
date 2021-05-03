@@ -27,7 +27,7 @@ void VertexArray::unbind() const {
   GLCALL(glBindVertexArray(0));
 }
 
-VertexArray::VertexArray() {
+VertexArray::VertexArray() : m_RendererID{0} {
   GLCALL(glGenVertexArrays(1, &m_RendererID));
 }
 
