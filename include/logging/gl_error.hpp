@@ -6,12 +6,19 @@
 
 #include "vendor/easylogging/easylogging++.hpp"
 
+#define ELPP_NO_DEFAULT_LOG_FILE
 #define ASSERT(x) \
-  if(!(x)) raise(SIGTRAP);
+  if(!(x)) raise(SIGTRAP)
+
+#ifdef DEBUG
 #define GLCALL(x)     \
   GE::clearGlError(); \
   x;                  \
-  ASSERT(GE::logGlCall());
+  ASSERT(GE::logGlCall())
+#else
+#define GLCALL(x) x
+#define ELPP_DISABLE_DEBUG_LOGS
+#endif
 
 namespace GE {
 
