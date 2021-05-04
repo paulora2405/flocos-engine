@@ -7,7 +7,7 @@ void Shader::setUniform4f(
   GLCALL(glUniform4f(this->getUniformLocation(name), v0, v1, v2, v3));
 }
 
-unsigned int Shader::getUniformLocation(const std::string& name) {
+int Shader::getUniformLocation(const std::string& name) {
   if(m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
     return m_UniformLocationCache[name];
 
@@ -52,8 +52,8 @@ ShaderProgramSource Shader::parseShader(const std::string& filepath) {
   return {ss[0].str(), ss[1].str()};
 }
 
-unsigned int Shader::compileShader(
-    unsigned int type, const std::string& source) {
+unsigned int Shader::compileShader(unsigned int type,
+                                   const std::string& source) {
   unsigned int id = glCreateShader(type);
   const char* src = source.c_str();
   glShaderSource(id, 1, &src, nullptr);
@@ -79,8 +79,8 @@ unsigned int Shader::compileShader(
   return id;
 }
 
-unsigned int Shader::createShader(
-    const std::string& vertexShader, const std::string& fragmentShader) {
+unsigned int Shader::createShader(const std::string& vertexShader,
+                                  const std::string& fragmentShader) {
   unsigned int program = glCreateProgram();  // GLint is eq to uint
 
   unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
@@ -106,7 +106,8 @@ void Shader::unbind() const {
 }
 
 Shader::Shader(const std::string& filepath)
-    : m_Filepath{filepath}, m_RendererID{0} {
+    : m_Filepath{filepath},
+      m_RendererID{0} {
   ShaderProgramSource source = this->parseShader(filepath);
   m_RendererID = this->createShader(source.VertexSource, source.FragmentSource);
 }

@@ -55,7 +55,7 @@ private:
    * @param[in] name Name of the uniform.
    * @returns The uniforms unique id.
    */
-  unsigned int getUniformLocation(const std::string& name);
+  int getUniformLocation(const std::string& name);
 
   /*!
    * @brief Parses a dual-shader file (vertex and fragment shader in the same
