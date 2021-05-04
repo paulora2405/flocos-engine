@@ -80,6 +80,7 @@ void GraphicsEngine::geInit() {
   m_window =
       glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
   if(!m_window) {
+    LOG(ERROR) << "GLFW COULD NOT CREATE THE WINDOW";
     glfwTerminate();
     return;
   }
@@ -92,7 +93,7 @@ void GraphicsEngine::geInit() {
 
   /* Initialize GLEW library */
   if(glewInit() != GLEW_OK) {
-    LOG(ERROR) << "ERROR: GLEW COULD NOT INITIALIZE";
+    LOG(ERROR) << "GLEW COULD NOT INITIALIZE";
     return;
   }
 
