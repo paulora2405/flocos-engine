@@ -26,6 +26,11 @@ public:
   void draw(const GE::VertexArray& va,
             const GE::IndexBuffer& ib,
             const GE::Shader& shader) const;
+
+  /*!
+   * @brief Clears OpenGL draw buffers.
+   */
+  void clear() const;
 };
 
 }  // namespace GE

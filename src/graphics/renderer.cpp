@@ -11,6 +11,10 @@ void Renderer::draw(const VertexArray& va,
   GLCALL(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
+void Renderer::clear() const {
+  glClear(GL_COLOR_BUFFER_BIT);
+}
+
 Renderer::Renderer() {}
 
 Renderer::~Renderer() {}
