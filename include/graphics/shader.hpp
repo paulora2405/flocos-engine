@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "logging/gl_error.hpp"
+#include "vendor/glm/glm.hpp"
 
 namespace GE {
 
@@ -54,6 +55,12 @@ public:
    * @param[in] value Value.
    */
   void setUniform1i(const std::string& name, int value);
+
+  /*! @brief Sets the value of a 4-float matrix uniform.
+   * @param[in] name Name of the uniform to set.
+   * @param[in] matrix Mat4 to set.
+   */
+  void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
 private:
   /*! @brief Locates a uniform inside the shader.
