@@ -12,7 +12,11 @@ void Renderer::draw(const VertexArray& va,
 }
 
 void Renderer::clear() const {
-  glClear(GL_COLOR_BUFFER_BIT);
+  const float r = 171.0f / 255.0f;
+  const float g = 219.0f / 255.0f;
+  const float b = 227.0f / 255.0f;
+  GLCALL(glClearColor(r, g, b, 1.0f));
+  GLCALL(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 Renderer::Renderer() {}
