@@ -15,6 +15,7 @@
 #include "graphics/index_buffer.hpp"
 #include "graphics/renderer.hpp"
 #include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"

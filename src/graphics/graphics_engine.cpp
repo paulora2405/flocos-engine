@@ -4,10 +4,10 @@ namespace GE {
 
 void GraphicsEngine::geMainLoop() {
   float positions[] = {
-      -0.5f, -0.5f,  // 0
-      0.5f,  -0.5f,  // 1
-      0.5f,  0.5f,   // 2
-      -0.5f, 0.5f,   // 3
+      -0.5f, -0.5f, 0.0f, 0.0f,  // 0
+      0.5f,  -0.5f, 1.0f, 0.0f,  // 1
+      0.5f,  0.5f,  1.0f, 1.0f,  // 2
+      -0.5f, 0.5f,  0.0f, 1.0f   // 3
   };
   unsigned int indices[] = {
       0, 1, 2,  // first triangle
@@ -15,9 +15,10 @@ void GraphicsEngine::geMainLoop() {
   };
 
   VertexArray va;
-  VertexBuffer vb{positions, 4 * 2 * sizeof(float)};
+  VertexBuffer vb{positions, 4 * 4 * sizeof(float)};
 
   VertexBufferLayout layout;
+  layout.push<float>(2);
   layout.push<float>(2);
   va.addBuffer(vb, layout);
 
@@ -25,14 +26,18 @@ void GraphicsEngine::geMainLoop() {
 
   Shader shader{"res/shaders/triangle_vf.shader"};
   shader.bind();
-  shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+  // shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+  Texture tex{"res/textures/c++.png"};
+  tex.bind();
+  shader.setUniform1i("u_Texture", 0);
 
   va.unbind();
   vb.unbind();
   ib.unbind();
   shader.unbind();
 
-  float r = 0.0f, g = 0.0f, b = 0.0f;
+  // float r = 0.0f, g = 0.8f, b = 0.8f;
 
   Renderer re;
 
@@ -40,13 +45,12 @@ void GraphicsEngine::geMainLoop() {
     re.clear();
 
     shader.bind();
-    shader.setUniform4f("u_Color", r, g, b, 1.0f);
+    // shader.setUniform4f("u_Color", r, g, b, 1.0f);
+    // r = r + 0.1f > 1.0f ? 0.0f : r + 0.05f;
+    // g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
+    // b = b + 0.1f > 1.0f ? 0.0f : b + 0.05f;
 
     re.draw(va, ib, shader);
-
-    r = r + 0.1f > 1.0f ? 0.0f : r + 0.05f;
-    g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
-    b = b + 0.1f > 1.0f ? 0.0f : b + 0.05f;
 
     glfwSwapBuffers(this->m_window);
     glfwPollEvents();
@@ -55,11 +59,6 @@ void GraphicsEngine::geMainLoop() {
 
 GLFWwindow* GraphicsEngine::geGetWindow() const {
   return m_window;
-}
-
-GraphicsEngine::~GraphicsEngine() {
-  glfwTerminate();
-  LOG(INFO) << "Window terminated successfully";
 }
 
 void GraphicsEngine::geInit() {
@@ -97,6 +96,9 @@ void GraphicsEngine::geInit() {
     return;
   }
 
+  GLCALL(glEnable(GL_BLEND));
+  GLCALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
   /* Print OpenGL Version */
   LOG(INFO) << "OpenGL Version: " << glGetString(GL_VERSION);
 
@@ -106,8 +108,14 @@ void GraphicsEngine::geInit() {
 
 GraphicsEngine::GraphicsEngine(const unsigned short& width,
                                const unsigned short& height)
-    : m_width{width}, m_height{height} {
+    : m_width{width},
+      m_height{height} {
   this->geInit();
+}
+
+GraphicsEngine::~GraphicsEngine() {
+  glfwTerminate();
+  LOG(INFO) << "Window terminated successfully";
 }
 
 }  // namespace GE
