@@ -39,7 +39,7 @@ public:
   void unbind() const;
 
   /*!
-   * @brief Sets the values of the uniform.
+   * @brief Sets the values of a 4-floats uniform.
    * @param[in] name Name of the uniform to set.
    * @param[in] v0 Value 0.
    * @param[in] v1 Value 1.
@@ -48,6 +48,18 @@ public:
    */
   void setUniform4f(
       const std::string& name, float v0, float v1, float v2, float v3);
+  /*!
+   * @brief Sets the value of a 1-float uniform.
+   * @param[in] name Name of the uniform to set.
+   * @param[in] value Value.
+   */
+  void setUniform1f(const std::string& name, float value);
+  /*!
+   * @brief Sets the value of a 1-int uniform.
+   * @param[in] name Name of the uniform to set.
+   * @param[in] value Value.
+   */
+  void setUniform1i(const std::string& name, int value);
 
 private:
   /*!
