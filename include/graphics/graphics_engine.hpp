@@ -20,6 +20,8 @@
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"
 #include "logging/gl_error.hpp"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
 
 namespace GE {
 
@@ -37,6 +39,7 @@ public:
    */
   GraphicsEngine(const unsigned short& width = 800,
                  const unsigned short& height = 640);
+
   /// @brief Terminates the GLFW Window.
   ~GraphicsEngine();
 

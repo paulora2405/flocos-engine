@@ -4,14 +4,14 @@ namespace GE {
 
 void GraphicsEngine::geMainLoop() {
   float positions[] = {
-      -0.5f, -0.5f, 0.0f, 0.0f,  // 0
-      0.5f,  -0.5f, 1.0f, 0.0f,  // 1
-      0.5f,  0.5f,  1.0f, 1.0f,  // 2
-      -0.5f, 0.5f,  0.0f, 1.0f   // 3
+      +100.0f, +100.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
+      +600.0f, +100.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
+      +600.0f, +600.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
+      +100.0f, +600.0f, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
   };
   unsigned int indices[] = {
-      0, 1, 2,  // first triangle
-      2, 3, 0,  // second triangle
+      0, 1, 2,  // 1st triangle indices of positions array
+      2, 3, 0,  // 2nd triangle indices of positions array
   };
 
   VertexArray va;
@@ -24,9 +24,13 @@ void GraphicsEngine::geMainLoop() {
 
   IndexBuffer ib{indices, 6};
 
+  glm::mat4 proj_matrix =
+      glm::ortho(0.0f, (float)m_width, 0.0f, (float)m_height, -1.0f, 1.0f);
+
   Shader shader{"res/shaders/triangle_vf.shader"};
   shader.bind();
   // shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+  shader.setUniformMat4f("u_MVP", proj_matrix);
 
   Texture tex{"res/textures/c++.png"};
   tex.bind();
@@ -97,6 +101,7 @@ void GraphicsEngine::geInit() {
     return;
   }
 
+  /* Enable blending in order to transparency to work */
   GLCALL(glEnable(GL_BLEND));
   GLCALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
