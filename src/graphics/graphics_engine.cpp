@@ -35,21 +35,17 @@ void GraphicsEngine::geMainLoop() {
 
   float r = 0.0f, g = 0.0f, b = 0.0f;
 
+  Renderer re;
+
   /* Loop until the user closes the window */
   while(!glfwWindowShouldClose(this->m_window)) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /* Binds shader */
     shader.bind();
-    /* Sets the values of the uniform */
     shader.setUniform4f("u_Color", r, g, b, 1.0f);
-    /* Binds vertex array and index buffer */
-    va.bind();
-    ib.bind();
 
-    /* Modern OpenGL drawing */
-    GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+    re.draw(va, ib, shader);
 
     r = r + 0.1f > 1.0f ? 0.0f : r + 0.05f;
     g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
@@ -86,8 +82,8 @@ void GraphicsEngine::geInit() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   /* Create a windowed mode window and its OpenGL context */
-  std::string window_name{
-      std::to_string(m_width) + "x" + std::to_string(m_height)};
+  std::string window_name{std::to_string(m_width) + "x" +
+                          std::to_string(m_height)};
   m_window =
       glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
   if(!m_window) {
@@ -114,8 +110,8 @@ void GraphicsEngine::geInit() {
   LOG(INFO) << "Window initiated successfully";
 }
 
-GraphicsEngine::GraphicsEngine(
-    const unsigned short& width, const unsigned short& height)
+GraphicsEngine::GraphicsEngine(const unsigned short& width,
+                               const unsigned short& height)
     : m_width{width}, m_height{height} {
   this->geInit();
 }
