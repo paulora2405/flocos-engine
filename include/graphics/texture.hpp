@@ -16,8 +16,7 @@ private:
   int m_Width, m_Height, m_BPP;
 
 public:
-  /*!
-   * @brief Contructs a Texture instance.
+  /*! @brief Contructs a Texture instance.
    * @param[in] filepath Path to texture file.
    */
   Texture(const std::string& filepath);

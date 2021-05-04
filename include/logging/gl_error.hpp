@@ -15,13 +15,10 @@
 
 namespace GE {
 
-/*!
- * @brief Calls glGetError() until there are no errors.
- */
+/// @brief Calls glGetError() until there are no errors.
 void clearGlError();
 
-/*!
- * @brief Checks for errors.
+/*! @brief Checks for errors.
  * @returns False if errors have been found. Otherwise True.
  */
 bool logGlCall();

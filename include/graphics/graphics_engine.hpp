@@ -30,39 +30,30 @@ private:
   const unsigned short m_height;
 
 public:
-  /*!
-   * @brief Defines width and height members with parameters and calls geInit().
+  /*! @brief Defines width and height members with parameters and calls
+   * geInit().
    * @param[in] width Width of the window (defaults to 800).
    * @param[in] height Height of the window (defaults to 640).
    */
   GraphicsEngine(const unsigned short& width = 800,
                  const unsigned short& height = 640);
-  /*!
-   * @brief Terminates the GLFW Window.
-   */
+  /// @brief Terminates the GLFW Window.
   ~GraphicsEngine();
 
-  /*!
-   * @brief The copy constructor is forbidden.
-   */
+  /// @brief The copy constructor is forbidden.
   GraphicsEngine(const GraphicsEngine&) = delete;
 
-  /*!
-   * @brief The assignment operator is forbidden.
-   */
+  /// @brief The assignment operator is forbidden.
   GraphicsEngine& operator=(const GraphicsEngine&) = delete;
 
-  /*!
-   * @returns Pointer to the window's instance.
-   */
+  /// @returns Pointer to the window's instance.
   GLFWwindow* geGetWindow() const;
 
   // TODO
   void geMainLoop();
 
 private:
-  /*!
-   * @brief Initializes GLFW, creates a Window, makes window the current
+  /*! @brief Initializes GLFW, creates a Window, makes window the current
    * context, and then initializes GLEW.
    */
   void geInit();

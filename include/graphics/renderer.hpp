@@ -17,8 +17,7 @@ public:
   Renderer();
   ~Renderer();
 
-  /*!
-   * @brief Executes a draw call.
+  /*! @brief Executes a draw call.
    * @param[in] va Vertex Array.
    * @param[in] ib Index Buffer.
    * @param[in] shader Shader.
@@ -27,9 +26,7 @@ public:
             const GE::IndexBuffer& ib,
             const GE::Shader& shader) const;
 
-  /*!
-   * @brief Clears OpenGL draw buffers.
-   */
+  /// @brief Clears OpenGL draw buffers.
   void clear() const;
 };
 
