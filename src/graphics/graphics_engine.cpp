@@ -27,7 +27,6 @@ void GraphicsEngine::geMainLoop() {
   shader.bind();
   shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
-  /* Unbinds everything */
   va.unbind();
   vb.unbind();
   ib.unbind();
@@ -37,10 +36,8 @@ void GraphicsEngine::geMainLoop() {
 
   Renderer re;
 
-  /* Loop until the user closes the window */
   while(!glfwWindowShouldClose(this->m_window)) {
-    /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
+    re.clear();
 
     shader.bind();
     shader.setUniform4f("u_Color", r, g, b, 1.0f);
@@ -51,10 +48,7 @@ void GraphicsEngine::geMainLoop() {
     g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
     b = b + 0.1f > 1.0f ? 0.0f : b + 0.05f;
 
-    /* Swap front and back buffers */
     glfwSwapBuffers(this->m_window);
-
-    /* Poll for and process events */
     glfwPollEvents();
   }
 }
