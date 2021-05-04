@@ -1,17 +1,18 @@
 #include "graphics/renderer.hpp"
+
 namespace GE {
 
-void ClearGlError() {
-  while(glGetError() != GL_NO_ERROR) {
-  }
+void Renderer::draw(const VertexArray& va,
+                    const IndexBuffer& ib,
+                    const Shader& shader) const {
+  shader.bind();
+  va.bind();
+  ib.bind();
+  GLCALL(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
-bool LogGlCall() {
-  while(GLenum error = glGetError()) {
-    LOG(ERROR) << "[OPENGL ERROR]:" << error;
-    return false;
-  }
-  return true;
-}
+Renderer::Renderer() {}
+
+Renderer::~Renderer() {}
 
 }  // namespace GE
