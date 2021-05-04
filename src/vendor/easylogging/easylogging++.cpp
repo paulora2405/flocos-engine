@@ -14,7 +14,7 @@
 //  http://muflihun.com
 //
 
-#include "logging/easylogging++.hpp"
+#include "vendor/easylogging/easylogging++.hpp"
 
 #if defined(AUTO_INITIALIZE_EASYLOGGINGPP)
 INITIALIZE_EASYLOGGINGPP

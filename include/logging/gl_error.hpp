@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "logging/easylogging++.hpp"
+#include "vendor/easylogging/easylogging++.hpp"
 
 #define ASSERT(x) \
   if(!(x)) raise(SIGTRAP);
