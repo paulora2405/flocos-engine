@@ -17,7 +17,8 @@
 #include "graphics/shader.hpp"
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
-#include "logging/easylogging++.h"
+#include "graphics/vertex_buffer_layout.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 
@@ -33,8 +34,8 @@ public:
    * @param[in] width Width of the window (defaults to 800).
    * @param[in] height Height of the window (defaults to 640).
    */
-  GraphicsEngine(
-      const unsigned short& width = 800, const unsigned short& height = 640);
+  GraphicsEngine(const unsigned short& width = 800,
+                 const unsigned short& height = 640);
   /*!
    * @brief Terminates the GLFW Window.
    */

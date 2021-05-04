@@ -8,7 +8,7 @@
 #include <string>
 
 #include "graphics/graphics_engine.hpp"
-#include "logging/easylogging++.h"
+#include "logging/gl_error.hpp"
 
 INITIALIZE_EASYLOGGINGPP
 

@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "graphics/renderer.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 

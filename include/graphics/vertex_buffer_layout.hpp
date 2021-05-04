@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "graphics/renderer.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 
