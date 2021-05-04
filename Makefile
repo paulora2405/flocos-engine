@@ -1,5 +1,5 @@
-CXX      := -g++
-CXXFLAGS := -std=c++14 -pedantic-errors -Wall -Wextra #-Werror
+CXX      := g++ # -g++ to compile everything even with errors
+CXXFLAGS := -std=c++14 -pedantic-errors -Wall -Wextra -fmessage-length=0 #-Werror
 LDFLAGS  := -lstdc++ -lm -lGL -lGLU -lGLEW -lglfw #-L/usr/lib
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
