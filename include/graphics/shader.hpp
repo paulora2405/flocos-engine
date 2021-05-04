@@ -8,7 +8,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "graphics/renderer.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 
@@ -80,8 +80,8 @@ private:
    * @param[in] fragmentShader Fragment Shader source code.
    * @returns The program id.
    */
-  unsigned int createShader(
-      const std::string& vertexShader, const std::string& fragmentShader);
+  unsigned int createShader(const std::string& vertexShader,
+                            const std::string& fragmentShader);
 };
 
 }  // namespace GE
