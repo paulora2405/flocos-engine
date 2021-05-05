@@ -3,11 +3,16 @@
 namespace GE {
 
 void GraphicsEngine::geMainLoop() {
+  float bot_w = m_width / 4;
+  float bot_h = m_height / 4;
+  float top_w = m_width - m_width / 4;
+  float top_h = m_height - m_width / 4;
+
   float positions[] = {
-      +100.0f, +100.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      +600.0f, +100.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      +600.0f, +600.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      +100.0f, +600.0f, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
+      bot_w, bot_h, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
+      top_w, bot_h, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
+      top_w, top_h, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
+      bot_w, top_h, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
   };
   unsigned int indices[] = {
       0, 1, 2,  // 1st triangle indices of positions array
@@ -15,22 +20,32 @@ void GraphicsEngine::geMainLoop() {
   };
 
   VertexArray va;
+  //                     4 vertex with 4 floats each
   VertexBuffer vb{positions, 4 * 4 * sizeof(float)};
 
   VertexBufferLayout layout;
-  layout.push<float>(2);
-  layout.push<float>(2);
+  layout.push<float>(2);  // vec2 of float
+  layout.push<float>(2);  // vec2 of float
   va.addBuffer(vb, layout);
 
-  IndexBuffer ib{indices, 6};
+  IndexBuffer ib{indices, 6};  // 6 indices will be drawn
 
   glm::mat4 proj_matrix =
       glm::ortho(0.0f, (float)m_width, 0.0f, (float)m_height, -1.0f, 1.0f);
 
+  glm::mat4 view_matrix =
+      glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+
+  glm::mat4 model_matrix =
+      glm::translate(glm::mat4(1.0f), glm::vec3(0, 100, 0));
+
+  /* P * V * M because opengl uses coloum-major matrices */
+  glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+
   Shader shader{"res/shaders/triangle_vf.shader"};
   shader.bind();
   // shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
-  shader.setUniformMat4f("u_MVP", proj_matrix);
+  shader.setUniformMat4f("u_MVP", mvp);
 
   Texture tex{"res/textures/c++.png"};
   tex.bind();
