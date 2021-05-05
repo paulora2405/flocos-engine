@@ -10,7 +10,7 @@
 #define ASSERT(x) \
   if(!(x)) raise(SIGTRAP)
 
-#ifdef DEBUG
+#if defined(DEBUG)
 #define GLCALL(x)     \
   GE::clearGlError(); \
   x;                  \
