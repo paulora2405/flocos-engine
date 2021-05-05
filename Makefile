@@ -5,7 +5,7 @@ BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := main.out
-INCLUDE  := -Iinclude/
+INCLUDE  := -Iinclude/ -Iinclude/vendor/imgui/
 SRC      :=                      \
 	$(wildcard src/graphics/*.cpp) \
 	$(wildcard src/logging/*.cpp)  \
