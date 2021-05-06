@@ -121,6 +121,9 @@ void GraphicsEngine::init() {
 
   /* Window initiated successfully */
   LOG(INFO) << "Window initiated successfully";
+
+  /* Callbacks setting */
+  glfwSetKeyCallback(this->m_window, inputs::handleKeyboard);
 }
 
 GraphicsEngine::GraphicsEngine(const unsigned short& width,
