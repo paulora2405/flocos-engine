@@ -62,6 +62,9 @@ private:
    * context, and then initializes GLEW.
    */
   void init();
+
+  /// @brief Calls GLFW SwapBuffers and PollEvents functions.
+  void swapAndPoll();
 };
 
 }  // namespace GE

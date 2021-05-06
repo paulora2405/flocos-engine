@@ -67,6 +67,11 @@ void GraphicsEngine::mainLoop() {
     gui.drawSliders(translation, {m_width - 200, m_height - 200});
     gui.draw();
 
+    this->swapAndPoll();
+  }
+}
+
+void GraphicsEngine::swapAndPoll() {
     glfwSwapBuffers(this->m_window);
     glfwPollEvents();
   }
