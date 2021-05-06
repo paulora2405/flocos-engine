@@ -1,9 +1,6 @@
 #ifndef VERTEX_BUFFER_LAYOUT_HPP
 #define VERTEX_BUFFER_LAYOUT_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <vector>
 
 #include "logging/gl_error.hpp"

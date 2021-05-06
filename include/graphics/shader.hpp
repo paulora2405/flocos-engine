@@ -1,14 +1,9 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 
-#include "logging/gl_error.hpp"
 #include "vendor/glm/glm.hpp"
 
 namespace GE {

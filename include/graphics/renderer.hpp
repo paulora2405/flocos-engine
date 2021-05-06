@@ -1,16 +1,13 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "graphics/index_buffer.hpp"
-#include "graphics/shader.hpp"
-#include "graphics/vertex_array.hpp"
-#include "logging/gl_error.hpp"
 #include "vendor/glm/glm.hpp"
 
 namespace GE {
+
+class VertexArray;
+class IndexBuffer;
+class Shader;
 
 class Renderer {
 private:

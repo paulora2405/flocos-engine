@@ -1,5 +1,7 @@
 #include "graphics/index_buffer.hpp"
 
+#include "logging/gl_error.hpp"
+
 namespace GE {
 
 void IndexBuffer::bind() const {
@@ -19,9 +21,8 @@ IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count)
   /* Binding means selecting a buffer */
   GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID));
   /* Puts data in the buffer */
-  GLCALL(glBufferData(
-      GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data,
-      GL_STATIC_DRAW));
+  GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int),
+                      data, GL_STATIC_DRAW));
 }
 
 IndexBuffer::~IndexBuffer() {

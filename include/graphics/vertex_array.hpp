@@ -1,14 +1,10 @@
 #ifndef VERTEX_ARRAY_HPP
 #define VERTEX_ARRAY_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "graphics/vertex_buffer.hpp"
-#include "graphics/vertex_buffer_layout.hpp"
-#include "logging/gl_error.hpp"
-
 namespace GE {
+
+class VertexBuffer;
+class VertexBufferLayout;
 
 class VertexArray {
 private:

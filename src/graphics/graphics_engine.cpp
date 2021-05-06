@@ -1,5 +1,17 @@
 #include "graphics/graphics_engine.hpp"
 
+#include "graphics/gui.hpp"
+#include "graphics/index_buffer.hpp"
+#include "graphics/renderer.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
+#include "graphics/vertex_array.hpp"
+#include "graphics/vertex_buffer.hpp"
+#include "graphics/vertex_buffer_layout.hpp"
+#include "inputs/inputs.hpp"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+
 namespace GE {
 
 void GraphicsEngine::mainLoop() {

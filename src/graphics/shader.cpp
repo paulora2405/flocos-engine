@@ -1,5 +1,12 @@
 #include "graphics/shader.hpp"
 
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+#include "logging/gl_error.hpp"
+
 namespace GE {
 
 void Shader::setUniform4f(

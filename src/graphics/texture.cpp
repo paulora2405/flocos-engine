@@ -1,5 +1,8 @@
 #include "graphics/texture.hpp"
 
+#include "logging/gl_error.hpp"
+#include "vendor/stbi/stb_image.hpp"
+
 namespace GE {
 
 void Texture::bind(unsigned int slot /* = 0 */) const {

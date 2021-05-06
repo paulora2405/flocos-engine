@@ -1,29 +1,7 @@
 #ifndef GRAPHICS_ENGINE_HPP
 #define GRAPHICS_ENGINE_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <signal.h>
-#include <stdlib.h>
-
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-#include "graphics/gui.hpp"
-#include "graphics/index_buffer.hpp"
-#include "graphics/renderer.hpp"
-#include "graphics/shader.hpp"
-#include "graphics/texture.hpp"
-#include "graphics/vertex_array.hpp"
-#include "graphics/vertex_buffer.hpp"
-#include "graphics/vertex_buffer_layout.hpp"
-#include "inputs/inputs.hpp"
 #include "logging/gl_error.hpp"
-#include "vendor/glm/glm.hpp"
-#include "vendor/glm/gtc/matrix_transform.hpp"
 
 namespace GE {
 
