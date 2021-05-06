@@ -33,7 +33,7 @@ private:
 
 public:
   /*! @brief Defines width and height members with parameters and calls
-   * geInit().
+   * init().
    * @param[in] width Width of the window (defaults to 800).
    * @param[in] height Height of the window (defaults to 640).
    */
@@ -50,16 +50,16 @@ public:
   GraphicsEngine& operator=(const GraphicsEngine&) = delete;
 
   /// @returns Pointer to the window's instance.
-  GLFWwindow* geGetWindow() const;
+  GLFWwindow* getWindow() const;
 
-  // TODO
-  void geMainLoop();
+  /// @brief Executes main OpenGL loop.
+  void mainLoop();
 
 private:
   /*! @brief Initializes GLFW, creates a Window, makes window the current
    * context, and then initializes GLEW.
    */
-  void geInit();
+  void init();
 };
 
 }  // namespace GE

@@ -2,12 +2,7 @@
 
 namespace GE {
 
-void GraphicsEngine::geMainLoop() {
-  float bot_w = m_width / 4;
-  float bot_h = m_height / 4;
-  float top_w = m_width - m_width / 4;
-  float top_h = m_height - m_width / 4;
-
+void GraphicsEngine::mainLoop() {
   float positions[] = {
       bot_w, bot_h, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
       top_w, bot_h, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
@@ -76,11 +71,11 @@ void GraphicsEngine::geMainLoop() {
   }
 }
 
-GLFWwindow* GraphicsEngine::geGetWindow() const {
+GLFWwindow* GraphicsEngine::getWindow() const {
   return m_window;
 }
 
-void GraphicsEngine::geInit() {
+void GraphicsEngine::init() {
   LOG(INFO) << "Initializing the GraphicsEngine instance";
   /* Initialize GLFW library */
   if(!glfwInit()) {
@@ -131,7 +126,7 @@ GraphicsEngine::GraphicsEngine(const unsigned short& width,
                                const unsigned short& height)
     : m_width{width},
       m_height{height} {
-  this->geInit();
+  this->init();
 }
 
 GraphicsEngine::~GraphicsEngine() {
