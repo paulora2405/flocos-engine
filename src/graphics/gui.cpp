@@ -17,8 +17,10 @@ void Gui::draw() {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Gui::drawSliders(const glm::vec3& t, glm::vec2 screen) {
-  ImGui::Begin("Picture Position");
+void Gui::drawSliders(const std::string& label,
+                      const glm::vec3& t,
+                      glm::vec2 screen) {
+  ImGui::Begin(label.c_str());
 
   ImGui::SliderFloat("X", (float*)&t.x, 0.0f, (float)screen.x);
   ImGui::SliderFloat("Y", (float*)&t.y, 0.0f, (float)screen.y);
@@ -29,7 +31,7 @@ void Gui::drawSliders(const glm::vec3& t, glm::vec2 screen) {
 void Gui::drawFps() {
   ImGuiWindowFlags window_flags = 0;
   window_flags |= ImGuiWindowFlags_NoTitleBar;
-  // window_flags |= ImGuiWindowFlags_NoBackground;
+  window_flags |= ImGuiWindowFlags_NoBackground;
   window_flags |= ImGuiWindowFlags_NoCollapse;
   window_flags |= ImGuiWindowFlags_NoResize;
   window_flags |= ImGuiWindowFlags_NoMove;
@@ -37,9 +39,16 @@ void Gui::drawFps() {
   window_flags |= ImGuiWindowFlags_NoInputs;
   window_flags |= ImGuiWindowFlags_NoDecoration;
 
+  const float fps = ImGui::GetIO().Framerate;
+
+  ImGui::Begin("FPS Shadow", nullptr, window_flags);
+  ImGui::TextColored({0.0f, 0.0f, 0.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
+                     1000.0f / fps);
+  ImGui::End();
+
   ImGui::Begin("FPS", nullptr, window_flags);
-  ImGui::Text("%.1f FPS (%.3f ms/frame)", ImGui::GetIO().Framerate,
-              1000.0f / ImGui::GetIO().Framerate);
+  ImGui::TextColored({1.0f, 1.0f, 1.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
+                     1000.0f / fps);
   ImGui::End();
 }
 

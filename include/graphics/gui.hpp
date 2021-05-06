@@ -1,6 +1,8 @@
 #ifndef GUI_HPP
 #define GUI_HPP
 
+#include <string>
+
 #include "logging/gl_error.hpp"
 #include "vendor/glm/glm.hpp"
 #include "vendor/imgui/imgui.h"
@@ -28,7 +30,9 @@ public:
   /// @brief ImGUI draw call.
   void draw();
 
-  void drawSliders(const glm::vec3& t, glm::vec2 screen);
+  void drawSliders(const std::string& label,
+                   const glm::vec3& t,
+                   glm::vec2 screen);
 
 private:
   /// @brief Called in the draw() function every ImGUI draw call.
