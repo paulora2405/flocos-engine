@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "graphics/renderer.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 
@@ -14,8 +14,7 @@ private:
   unsigned int m_Count;
 
 public:
-  /*!
-   * @brief Creates index buffer.
+  /*! @brief Creates index buffer.
    * @param[in] data Pointer to the data.
    * @param[in] count Quantity of indexes.
    */

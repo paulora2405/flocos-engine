@@ -1,23 +1,27 @@
-CXX      := -g++
-CXXFLAGS := -std=c++14 -pedantic-errors -Wall -Wextra #-Werror
-LDFLAGS  := -lstdc++ -lm -lGL -lGLU -lGLEW -lglfw #-L/usr/lib
+CXX      := g++# -g++ to compile everything even with errors
+CXXFLAGS := -std=c++14 -pedantic-errors -Wall -Wextra -fmessage-length=0# -Werror
+LDFLAGS  := -lstdc++ -lm -lGL -lGLU -lGLEW -lglfw# -L/usr/lib
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := main.out
-INCLUDE  := -Iinclude/
+INCLUDE  := -Iinclude/ -Iinclude/vendor/imgui/
 SRC      :=                      \
 	$(wildcard src/graphics/*.cpp) \
-	$(wildcard src/logging/*.cpp) \
+	$(wildcard src/inputs/*.cpp) \
+	$(wildcard src/logging/*.cpp)  \
+	$(wildcard src/vendor/*/*.cpp) \
 	$(wildcard src/*.cpp)          \
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 DEPENDENCIES  \
          := $(OBJECTS:.o=.d)
 
-ARCHIVE  := doom-slayer-source-code
+ARCHIVE  := doom-slayer-project
 SUBMISSIONS := 									\
 	src/ include/	res/						\
+	configuration/ .vscode/ logs/ \
+	.clang-format 								\
 	LICENSE README.md Makefile 		\
 
 all: build $(APP_DIR)/$(TARGET)
@@ -43,10 +47,10 @@ build:
 	@mkdir -p $(APP_DIR)
 	@mkdir -p $(OBJ_DIR)
 
-debug: CXXFLAGS += -g
+debug: CXXFLAGS +=-DDEBUG -g
 debug: all
 
-release: CXXFLAGS += -O2
+release: CXXFLAGS +=-O2
 release: all
 
 clean:

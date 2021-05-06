@@ -12,17 +12,20 @@
 #include <sstream>
 #include <string>
 
+#include "graphics/gui.hpp"
 #include "graphics/index_buffer.hpp"
 #include "graphics/renderer.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
-#include "logging/easylogging++.h"
+#include "graphics/vertex_buffer_layout.hpp"
+#include "inputs/inputs.hpp"
+#include "logging/gl_error.hpp"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
 
 namespace GE {
-struct ShaderProgramSource {
-  std::string VertexSource;
-  std::string FragmentSource;
-};
 
 class GraphicsEngine {
 private:
@@ -31,67 +34,34 @@ private:
   const unsigned short m_height;
 
 public:
-  /*!
-   * @brief Defines width and height members with parameters and calls geInit().
+  /*! @brief Defines width and height members with parameters and calls
+   * init().
    * @param[in] width Width of the window (defaults to 800).
    * @param[in] height Height of the window (defaults to 640).
    */
-  GraphicsEngine(
-      const unsigned short& width = 800, const unsigned short& height = 640);
-  /*!
-   * @brief Terminates the GLFW Window.
-   */
+  GraphicsEngine(const unsigned short& width = 800,
+                 const unsigned short& height = 640);
+
+  /// @brief Terminates the GLFW Window.
   ~GraphicsEngine();
 
-  /*!
-   * @brief The copy constructor is forbidden.
-   */
+  /// @brief The copy constructor is forbidden.
   GraphicsEngine(const GraphicsEngine&) = delete;
 
-  /*!
-   * @brief The assignment operator is forbidden.
-   */
+  /// @brief The assignment operator is forbidden.
   GraphicsEngine& operator=(const GraphicsEngine&) = delete;
 
-  /*!
-   * @returns Pointer to the window's instance.
-   */
-  GLFWwindow* geGetWindow() const;
+  /// @returns Pointer to the window's instance.
+  GLFWwindow* getWindow() const;
 
-  // TODO
-  void geMainLoop();
+  /// @brief Executes main OpenGL loop.
+  void mainLoop();
 
 private:
-  /*!
-   * @brief Initializes GLFW, creates a Window, makes window the current
+  /*! @brief Initializes GLFW, creates a Window, makes window the current
    * context, and then initializes GLEW.
    */
-  void geInit();
-
-  /*!
-   * @brief Parses a dual-shader file (vertex and fragment shader in the same
-   * file) to a ShaderProgramSource struct.
-   * @param[in] path Path to the shader file.
-   * @returns A ShaderProgramSource struct.
-   */
-  ShaderProgramSource geParseShader(const std::string& path);
-
-  /*!
-   * @brief Compiles a Shader with a specific type from its source code.
-   * @param[in] type GLEW Shader type, e.g. GL_VERTEX_SHADER or
-   * GL_FRAGMENT_SHADER.
-   * @returns The program id.
-   */
-  unsigned int geCompileShader(unsigned int type, const std::string& source);
-
-  /*!
-   * @brief Creates a program and attaches the vertex and fragment shader to it.
-   * @param[in] vertexShader Vertex Shader source code.
-   * @param[in] fragmentShader Fragment Shader source code.
-   * @returns The program id.
-   */
-  unsigned int geCreateShader(
-      const std::string& vertexShader, const std::string& fragmentShader);
+  void init();
 };
 
 }  // namespace GE

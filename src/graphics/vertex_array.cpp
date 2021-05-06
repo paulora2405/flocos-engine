@@ -2,8 +2,8 @@
 
 namespace GE {
 
-void VertexArray::addBuffer(
-    const VertexBuffer& vb, const VertexBufferLayout& layout) {
+void VertexArray::addBuffer(const VertexBuffer& vb,
+                            const VertexBufferLayout& layout) {
   this->bind();
   vb.bind();
 
@@ -13,9 +13,8 @@ void VertexArray::addBuffer(
   for(unsigned int i = 0; i < elements.size(); i++) {
     const auto& e = elements[i];
     GLCALL(glEnableVertexAttribArray(i));
-    GLCALL(glVertexAttribPointer(
-        i, e.count, e.type, e.normalized, layout.getStride(),
-        (const void*)offset));
+    GLCALL(glVertexAttribPointer(i, e.count, e.type, e.normalized,
+                                 layout.getStride(), (const void*)offset));
     offset += e.count * VertexBufferElement::getSizeOfType(e.type);
   }
 }
@@ -27,7 +26,7 @@ void VertexArray::unbind() const {
   GLCALL(glBindVertexArray(0));
 }
 
-VertexArray::VertexArray() {
+VertexArray::VertexArray() : m_RendererID{0} {
   GLCALL(glGenVertexArrays(1, &m_RendererID));
 }
 

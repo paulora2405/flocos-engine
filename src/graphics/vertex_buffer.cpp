@@ -10,7 +10,8 @@ void VertexBuffer::unbind() const {
   GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-VertexBuffer::VertexBuffer(const void* data, unsigned int size) {
+VertexBuffer::VertexBuffer(const void* data, unsigned int size)
+    : m_RendererID{0} {
   /* Generate one buffer and put its id in the variable */
   GLCALL(glGenBuffers(1, &m_RendererID));
   /* Binding means selecting a buffer */

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "graphics/renderer.hpp"
+#include "logging/gl_error.hpp"
 
 namespace GE {
 
@@ -38,9 +38,7 @@ private:
 public:
   VertexBufferLayout() : m_Stride{0} {}
 
-  /*!
-   * @brief Only types allowed are float, unsigned int and unsigned char.
-   */
+  /// @brief Only types allowed are float, unsigned int and unsigned char.
   template <typename T>
   void push(unsigned int count);
 
