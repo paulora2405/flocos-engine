@@ -8,6 +8,7 @@
 #include "graphics/shader.hpp"
 #include "graphics/vertex_array.hpp"
 #include "logging/gl_error.hpp"
+#include "vendor/glm/glm.hpp"
 
 namespace GE {
 
@@ -27,7 +28,7 @@ public:
             const GE::Shader& shader) const;
 
   /// @brief Clears OpenGL draw buffers.
-  void clear() const;
+  void clear(const glm::vec4 color = {0.67f, 0.85f, 0.89f, 1.0f}) const;
 };
 
 }  // namespace GE
