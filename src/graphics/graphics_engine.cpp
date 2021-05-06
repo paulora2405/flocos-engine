@@ -4,10 +4,10 @@ namespace GE {
 
 void GraphicsEngine::mainLoop() {
   float positions[] = {
-      bot_w, bot_h, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      top_w, bot_h, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      top_w, top_h, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      bot_w, top_h, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
+      +0,   +0,   0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
+      +200, +0,   1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
+      +200, +200, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
+      +0,   +200, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
   };
   unsigned int indices[] = {
       0, 1, 2,  // 1st triangle indices of positions array
@@ -28,21 +28,12 @@ void GraphicsEngine::mainLoop() {
   glm::mat4 proj_matrix =
       glm::ortho(0.0f, (float)m_width, 0.0f, (float)m_height, -1.0f, 1.0f);
 
-  glm::mat4 view_matrix =
-      glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
-
-  glm::mat4 model_matrix =
-      glm::translate(glm::mat4(1.0f), glm::vec3(0, 100, 0));
-
-  /* P * V * M because opengl uses coloum-major matrices */
-  glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+  glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
   Shader shader{"res/shaders/triangle_vf.shader"};
   shader.bind();
-  // shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
-  shader.setUniformMat4f("u_MVP", mvp);
 
-  Texture tex{"res/textures/c++.png"};
+  Texture tex{"res/textures/grass.png"};
   tex.bind();
   shader.setUniform1i("u_Texture", 0);
 
@@ -51,20 +42,30 @@ void GraphicsEngine::mainLoop() {
   ib.unbind();
   shader.unbind();
 
-  // float r = 0.0f, g = 0.8f, b = 0.8f;
-
   Renderer re;
+  glm::vec3 translation{-100 + m_width / 2, -100 + m_height / 2, 0};
+
+  Gui gui{this->m_window, false};
 
   while(!glfwWindowShouldClose(this->m_window)) {
+    // re.clear({0.1f, 0.9f, 0.2f, 1.0f});
     re.clear();
 
+    gui.newFrame();
+
     shader.bind();
-    // shader.setUniform4f("u_Color", r, g, b, 1.0f);
-    // r = r + 0.1f > 1.0f ? 0.0f : r + 0.05f;
-    // g = g + 0.1f > 1.0f ? 0.0f : g + 0.05f;
-    // b = b + 0.1f > 1.0f ? 0.0f : b + 0.05f;
+
+    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation);
+
+    /* P * V * M because opengl uses coloum-major matrices */
+    glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+
+    shader.setUniformMat4f("u_MVP", mvp);
 
     re.draw(va, ib, shader);
+
+    gui.drawSliders(translation, {m_width - 200, m_height - 200});
+    gui.draw();
 
     glfwSwapBuffers(this->m_window);
     glfwPollEvents();
