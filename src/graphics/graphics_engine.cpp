@@ -4,10 +4,10 @@ namespace GE {
 
 void GraphicsEngine::mainLoop() {
   float positions[] = {
-      +0,   +0,   0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      +200, +0,   1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      +200, +200, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      +0,   +200, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
+      -50.0f, -50.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
+      +50.0f, -50.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
+      +50.0f, +50.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
+      -50.0f, +50.0f, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
   };
   unsigned int indices[] = {
       0, 1, 2,  // 1st triangle indices of positions array
@@ -43,28 +43,36 @@ void GraphicsEngine::mainLoop() {
   shader.unbind();
 
   Renderer re;
-  glm::vec3 translation{-100 + m_width / 2, -100 + m_height / 2, 0};
+  glm::vec3 translation1{+m_width / 2, +m_height / 2, 0};
+  glm::vec3 translation2{+m_width / 4, +m_height / 4, 0};
 
   Gui gui{this->m_window, false};
 
   while(!glfwWindowShouldClose(this->m_window)) {
     // re.clear({0.1f, 0.9f, 0.2f, 1.0f});
     re.clear();
-
     gui.newFrame();
 
-    shader.bind();
+    {
+      glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation1);
+      /* P * V * M because opengl uses coloum-major matrices */
+      glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
 
-    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation);
+      shader.bind();
+      shader.setUniformMat4f("u_MVP", mvp);
+      re.draw(va, ib, shader);
+    }
+    {
+      glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation2);
+      /* P * V * M because opengl uses coloum-major matrices */
+      glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
+      shader.bind();
+      shader.setUniformMat4f("u_MVP", mvp);
+      re.draw(va, ib, shader);
+    }
 
-    /* P * V * M because opengl uses coloum-major matrices */
-    glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
-
-    shader.setUniformMat4f("u_MVP", mvp);
-
-    re.draw(va, ib, shader);
-
-    gui.drawSliders(translation, {m_width - 200, m_height - 200});
+    gui.drawSliders("PicPos1", translation1, {m_width, m_height});
+    gui.drawSliders("PicPos2", translation2, {m_width, m_height});
     gui.draw();
 
     this->swapAndPoll();
@@ -72,9 +80,8 @@ void GraphicsEngine::mainLoop() {
 }
 
 void GraphicsEngine::swapAndPoll() {
-    glfwSwapBuffers(this->m_window);
-    glfwPollEvents();
-  }
+  glfwSwapBuffers(this->m_window);
+  glfwPollEvents();
 }
 
 GLFWwindow* GraphicsEngine::getWindow() const {
@@ -107,6 +114,14 @@ void GraphicsEngine::init() {
 
   /* Make the window's context current */
   glfwMakeContextCurrent(m_window);
+
+  /* Window's properties */
+  // glfwSetWindowAspectRatio(m_window, m_width, m_height);
+  // glfwSetWindowPos(m_window, 200, 150);
+  // GLFWmonitor* monitor = glfwGetWindowMonitor(m_window);
+  // const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+  // glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height,
+  //                      mode->refreshRate);
 
   /* Sincronizes the framerate with the monitors refresh rate */
   glfwSwapInterval(1);
