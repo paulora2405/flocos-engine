@@ -9,86 +9,48 @@
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
+#include "tests/test_clear_color.hpp"
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/imgui/imgui.h"
 
 namespace GE {
 
 void GraphicsEngine::mainLoop() {
-  float positions[] = {
-      -50.0f, -50.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      +50.0f, -50.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      +50.0f, +50.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      -50.0f, +50.0f, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
-  };
-  unsigned int indices[] = {
-      0, 1, 2,  // 1st triangle indices of positions array
-      2, 3, 0,  // 2nd triangle indices of positions array
-  };
-
-  VertexArray va;
-  //                     4 vertex with 4 floats each
-  VertexBuffer vb{positions, 4 * 4 * sizeof(float)};
-
-  VertexBufferLayout layout;
-  layout.push<float>(2);  // vec2 of float
-  layout.push<float>(2);  // vec2 of float
-  va.addBuffer(vb, layout);
-
-  IndexBuffer ib{indices, 6};  // 6 indices will be drawn
-
-  glm::mat4 proj_matrix =
-      glm::ortho(0.0f, (float)m_width, 0.0f, (float)m_height, -1.0f, 1.0f);
-
-  glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-
-  Shader shader{"res/shaders/triangle_vf.shader"};
-  shader.bind();
-
-  Texture tex{"res/textures/grass.png"};
-  tex.bind();
-  shader.setUniform1i("u_Texture", 0);
-
-  va.unbind();
-  vb.unbind();
-  ib.unbind();
-  shader.unbind();
-
   Renderer re;
-  glm::vec3 translation1{+m_width / 2, +m_height / 2, 0};
-  glm::vec3 translation2{+m_width / 4, +m_height / 4, 0};
 
   Gui gui{this->m_window, false};
 
+  tests::Test* currentTest = nullptr;
+  tests::TestMenu* testMenu = new tests::TestMenu{currentTest};
+  currentTest = testMenu;
+
+  testMenu->registerTest<tests::TestClearColor>("TestClearColor");
+
   while(!glfwWindowShouldClose(this->m_window)) {
-    // re.clear({0.1f, 0.9f, 0.2f, 1.0f});
     re.clear();
+
     gui.newFrame();
 
-    {
-      glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation1);
-      /* P * V * M because opengl uses coloum-major matrices */
-      glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
-
-      shader.bind();
-      shader.setUniformMat4f("u_MVP", mvp);
-      re.draw(va, ib, shader);
-    }
-    {
-      glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation2);
-      /* P * V * M because opengl uses coloum-major matrices */
-      glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
-      shader.bind();
-      shader.setUniformMat4f("u_MVP", mvp);
-      re.draw(va, ib, shader);
+    if(currentTest) {
+      currentTest->onUpdate(0.0f);
+      currentTest->onRender();
+      ImGui::Begin("TestMenu");
+      if(currentTest != testMenu && ImGui::Button("<-")) {
+        delete currentTest;
+        currentTest = testMenu;
+      }
+      currentTest->onImGuiRender();
+      ImGui::End();
     }
 
-    gui.drawSliders("PicPos1", translation1, {m_width, m_height});
-    gui.drawSliders("PicPos2", translation2, {m_width, m_height});
     gui.draw();
 
     this->swapAndPoll();
   }
+
+  if(currentTest != testMenu) delete testMenu;
+  delete currentTest;
 }
 
 void GraphicsEngine::swapAndPoll() {

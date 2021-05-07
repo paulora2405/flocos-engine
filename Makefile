@@ -10,6 +10,7 @@ SRC      :=                      \
 	$(wildcard src/graphics/*.cpp) \
 	$(wildcard src/inputs/*.cpp) \
 	$(wildcard src/logging/*.cpp)  \
+	$(wildcard src/tests/*.cpp)  \
 	$(wildcard src/vendor/*/*.cpp) \
 	$(wildcard src/*.cpp)          \
 
