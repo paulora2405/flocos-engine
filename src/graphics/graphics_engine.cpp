@@ -150,12 +150,20 @@ void GraphicsEngine::init() {
 
   /* Print OpenGL Version */
   LOG(INFO) << "OpenGL Version: " << glGetString(GL_VERSION);
+  LOG(INFO) << "Renderer: " << glGetString(GL_RENDERER);
+  LOG(INFO) << "Vendor: " << glGetString(GL_VENDOR);
 
   /* Window initiated successfully */
   LOG(INFO) << "Window initiated successfully";
 
   /* Callbacks setting */
   glfwSetKeyCallback(this->m_window, inputs::handleKeyboard);
+}
+
+GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
+                                            const unsigned short& height) {
+  static GraphicsEngine s_Instance{width, height};
+  return s_Instance;
 }
 
 GraphicsEngine::GraphicsEngine(const unsigned short& width,

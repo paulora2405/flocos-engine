@@ -22,16 +22,14 @@ int main(int argc, char const* argv[]) {
   //
   switch(argc) {
     case 1: {
-      GE::GraphicsEngine ge{};
-      ge.mainLoop();
+      GE::GraphicsEngine::getInstance().mainLoop();
       break;
     }
 
     case 3: {
       unsigned short w = atoi(argv[1]);
       unsigned short h = atoi(argv[2]);
-      GE::GraphicsEngine ge{w, h};
-      ge.mainLoop();
+      GE::GraphicsEngine::getInstance(w, h).mainLoop();
       break;
     }
 
