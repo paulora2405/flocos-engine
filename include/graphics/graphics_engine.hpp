@@ -5,6 +5,7 @@
 
 namespace GE {
 
+/// @brief Singleton GraphicsEngine Class.
 class GraphicsEngine {
 private:
   GLFWwindow* m_window;
@@ -46,6 +47,9 @@ public:
 
   /// @returns Pointer to the window's instance.
   GLFWwindow* getWindow() const;
+
+  unsigned short getWindowWidth() const;
+  unsigned short getWindowHeight() const;
 
   /// @brief Executes main OpenGL loop.
   void mainLoop();

@@ -62,6 +62,13 @@ GLFWwindow* GraphicsEngine::getWindow() const {
   return m_window;
 }
 
+unsigned short GraphicsEngine::getWindowWidth() const {
+  return m_width;
+}
+unsigned short GraphicsEngine::getWindowHeight() const {
+  return m_height;
+}
+
 void GraphicsEngine::init() {
   LOG(INFO) << "Initializing the GraphicsEngine instance";
   /* Initialize GLFW library */
