@@ -10,6 +10,7 @@
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
 #include "tests/test_clear_color.hpp"
+#include "tests/test_texture.hpp"
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
@@ -26,6 +27,7 @@ void GraphicsEngine::mainLoop() {
   currentTest = testMenu;
 
   testMenu->registerTest<tests::TestClearColor>("TestClearColor");
+  testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
 
   while(!glfwWindowShouldClose(this->m_window)) {
     re.clear();
