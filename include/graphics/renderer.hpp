@@ -24,7 +24,9 @@ public:
             const GE::IndexBuffer& ib,
             const GE::Shader& shader) const;
 
-  /// @brief Clears OpenGL draw buffers.
+  /*! @brief Clears OpenGL draw buffers.
+   * @param[in] color RGBA color vec4 (defaults to 0.67, 0.85, 0.89, 1.0).
+   */
   void clear(const glm::vec4 color = {0.67f, 0.85f, 0.89f, 1.0f}) const;
 };
 
