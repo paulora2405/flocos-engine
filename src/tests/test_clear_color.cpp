@@ -5,7 +5,9 @@
 
 namespace tests {
 
-TestClearColor::TestClearColor() : m_ClearColor{0.5f, 0.2f, 0.8f, 1.0f} {}
+TestClearColor::TestClearColor() : m_ClearColor{0.5f, 0.2f, 0.8f, 1.0f} {
+  LOG(DEBUG) << "Creating Clear Color Test";
+}
 
 TestClearColor::~TestClearColor() {}
 

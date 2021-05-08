@@ -30,7 +30,7 @@ public:
 
   template <typename T>
   void registerTest(const std::string &label) {
-    LOG(TRACE) << "Registering test " << label;
+    LOG(DEBUG) << "Registering test " << label;
 
     m_Tests.push_back(std::make_pair(label, []() { return new T(); }));
   }

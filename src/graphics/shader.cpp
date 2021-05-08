@@ -31,6 +31,8 @@ int Shader::getUniformLocation(const std::string& name) const {
   if(m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
     return m_UniformLocationCache[name];
 
+  LOG(DEBUG) << "Uniform " << name << " not found on cache";
+
   GLCALL(int location = glGetUniformLocation(m_RendererID, name.c_str()));
   if(location == -1)
     LOG(WARNING) << "Uniform '" << name << "' could not be located!";
@@ -128,6 +130,7 @@ void Shader::unbind() const {
 Shader::Shader(const std::string& filepath)
     : m_Filepath{filepath},
       m_RendererID{0} {
+  LOG(DEBUG) << "Parsing and compiling shader on " << filepath;
   ShaderProgramSource source = this->parseShader(filepath);
   m_RendererID = this->createShader(source.VertexSource, source.FragmentSource);
 }
