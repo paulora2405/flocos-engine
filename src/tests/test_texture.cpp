@@ -23,11 +23,10 @@ TestTexture2D::TestTexture2D()
       -50.0f, -50.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
       +50.0f, -50.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
       +50.0f, +50.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      -50.0f, +50.0f, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
+      -50.0f, +50.0f, 0.0f, 1.0f,  // i=3 vec2 of pos, vec2 of tex bounds
   };
   unsigned int indices[] = {
-      0, 1, 2,  // 1st triangle indices of positions array
-      2, 3, 0,  // 2nd triangle indices of positions array
+      0, 1, 2, 2, 3, 0,  // 1st and 2nd triangles indices
   };
 
   m_VAO = std::make_unique<GE::VertexArray>();
