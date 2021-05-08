@@ -17,7 +17,7 @@ class Shader {
 private:
   std::string m_Filepath;
   unsigned int m_RendererID;
-  std::unordered_map<std::string, int> m_UniformLocationCache;
+  mutable std::unordered_map<std::string, int> m_UniformLocationCache;
 
 public:
   /*! @brief Shader constructor.
@@ -62,7 +62,7 @@ private:
    * @param[in] name Name of the uniform.
    * @returns The uniforms unique id.
    */
-  int getUniformLocation(const std::string& name);
+  int getUniformLocation(const std::string& name) const;
 
   /*! @brief Parses a dual-shader file (vertex and fragment shader in the same
    * file) to a ShaderProgramSource struct.
