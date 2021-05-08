@@ -29,11 +29,11 @@ public:
 
   void drawSliders(const std::string& label,
                    const glm::vec3& t,
-                   glm::vec2 screen);
+                   glm::vec2 screen) const;
 
 private:
   /// @brief Called in the draw() function every ImGUI draw call.
-  void drawFps();
+  void drawFps() const;
 };
 
 }  // namespace GE

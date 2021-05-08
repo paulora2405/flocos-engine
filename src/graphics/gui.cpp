@@ -23,7 +23,7 @@ void Gui::draw() {
 
 void Gui::drawSliders(const std::string& label,
                       const glm::vec3& t,
-                      glm::vec2 screen) {
+                      glm::vec2 screen) const {
   ImGui::Begin(label.c_str());
 
   ImGui::SliderFloat("X", (float*)&t.x, 0.0f, (float)screen.x);
@@ -32,7 +32,7 @@ void Gui::drawSliders(const std::string& label,
   ImGui::End();
 }
 
-void Gui::drawFps() {
+void Gui::drawFps() const {
   ImGuiWindowFlags window_flags = 0;
   window_flags |= ImGuiWindowFlags_NoTitleBar;
   window_flags |= ImGuiWindowFlags_NoBackground;
