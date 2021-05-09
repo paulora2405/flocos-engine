@@ -15,4 +15,4 @@ bool logGlCall() {
   return true;
 }
 
-}
+}  // namespace GE

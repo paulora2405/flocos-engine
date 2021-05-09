@@ -1,5 +1,10 @@
 #include "graphics/renderer.hpp"
 
+#include "graphics/index_buffer.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/vertex_array.hpp"
+#include "logging/gl_error.hpp"
+
 namespace GE {
 
 void Renderer::draw(const VertexArray& va,

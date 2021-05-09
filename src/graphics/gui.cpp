@@ -1,5 +1,9 @@
 #include "graphics/gui.hpp"
 
+#include "vendor/imgui/imgui.h"
+#include "vendor/imgui/imgui_impl_glfw.h"
+#include "vendor/imgui/imgui_impl_opengl3.h"
+
 namespace GE {
 
 void Gui::newFrame() {
@@ -17,8 +21,10 @@ void Gui::draw() {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Gui::drawSliders(const glm::vec3& t, glm::vec2 screen) {
-  ImGui::Begin("Picture Position");
+void Gui::drawSliders(const std::string& label,
+                      const glm::vec3& t,
+                      glm::vec2 screen) const {
+  ImGui::Begin(label.c_str());
 
   ImGui::SliderFloat("X", (float*)&t.x, 0.0f, (float)screen.x);
   ImGui::SliderFloat("Y", (float*)&t.y, 0.0f, (float)screen.y);
@@ -26,10 +32,10 @@ void Gui::drawSliders(const glm::vec3& t, glm::vec2 screen) {
   ImGui::End();
 }
 
-void Gui::drawFps() {
+void Gui::drawFps() const {
   ImGuiWindowFlags window_flags = 0;
   window_flags |= ImGuiWindowFlags_NoTitleBar;
-  // window_flags |= ImGuiWindowFlags_NoBackground;
+  window_flags |= ImGuiWindowFlags_NoBackground;
   window_flags |= ImGuiWindowFlags_NoCollapse;
   window_flags |= ImGuiWindowFlags_NoResize;
   window_flags |= ImGuiWindowFlags_NoMove;
@@ -37,9 +43,16 @@ void Gui::drawFps() {
   window_flags |= ImGuiWindowFlags_NoInputs;
   window_flags |= ImGuiWindowFlags_NoDecoration;
 
+  const float fps = ImGui::GetIO().Framerate;
+
+  ImGui::Begin("FPS Shadow", nullptr, window_flags);
+  ImGui::TextColored({0.0f, 0.0f, 0.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
+                     1000.0f / fps);
+  ImGui::End();
+
   ImGui::Begin("FPS", nullptr, window_flags);
-  ImGui::Text("%.1f FPS (%.3f ms/frame)", ImGui::GetIO().Framerate,
-              1000.0f / ImGui::GetIO().Framerate);
+  ImGui::TextColored({1.0f, 1.0f, 1.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
+                     1000.0f / fps);
   ImGui::End();
 }
 

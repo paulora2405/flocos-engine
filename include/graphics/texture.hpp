@@ -3,9 +3,6 @@
 
 #include <string>
 
-#include "logging/gl_error.hpp"
-#include "vendor/stbi/stb_image.hpp"
-
 namespace GE {
 
 class Texture {

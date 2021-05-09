@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <signal.h>
 
 #include "vendor/easylogging/easylogging++.hpp"
 

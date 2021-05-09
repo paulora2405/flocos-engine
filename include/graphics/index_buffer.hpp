@@ -1,11 +1,6 @@
 #ifndef INDEX_BUFFER_HPP
 #define INDEX_BUFFER_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "logging/gl_error.hpp"
-
 namespace GE {
 
 class IndexBuffer {

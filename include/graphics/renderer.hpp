@@ -1,16 +1,13 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "graphics/index_buffer.hpp"
-#include "graphics/shader.hpp"
-#include "graphics/vertex_array.hpp"
-#include "logging/gl_error.hpp"
 #include "vendor/glm/glm.hpp"
 
 namespace GE {
+
+class VertexArray;
+class IndexBuffer;
+class Shader;
 
 class Renderer {
 private:
@@ -27,7 +24,9 @@ public:
             const GE::IndexBuffer& ib,
             const GE::Shader& shader) const;
 
-  /// @brief Clears OpenGL draw buffers.
+  /*! @brief Clears OpenGL draw buffers.
+   * @param[in] color RGBA color vec4 (defaults to 0.67, 0.85, 0.89, 1.0).
+   */
   void clear(const glm::vec4 color = {0.67f, 0.85f, 0.89f, 1.0f}) const;
 };
 

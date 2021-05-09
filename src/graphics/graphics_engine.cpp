@@ -1,79 +1,74 @@
 #include "graphics/graphics_engine.hpp"
 
+#include "graphics/gui.hpp"
+#include "graphics/index_buffer.hpp"
+#include "graphics/renderer.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
+#include "graphics/vertex_array.hpp"
+#include "graphics/vertex_buffer.hpp"
+#include "graphics/vertex_buffer_layout.hpp"
+#include "inputs/inputs.hpp"
+#include "tests/test_clear_color.hpp"
+#include "tests/test_texture.hpp"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/imgui/imgui.h"
+
 namespace GE {
 
 void GraphicsEngine::mainLoop() {
-  float positions[] = {
-      +0,   +0,   0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      +200, +0,   1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      +200, +200, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      +0,   +200, 0.0f, 1.0f   // i=3 vec2 of pos, vec2 of tex bounds
-  };
-  unsigned int indices[] = {
-      0, 1, 2,  // 1st triangle indices of positions array
-      2, 3, 0,  // 2nd triangle indices of positions array
-  };
-
-  VertexArray va;
-  //                     4 vertex with 4 floats each
-  VertexBuffer vb{positions, 4 * 4 * sizeof(float)};
-
-  VertexBufferLayout layout;
-  layout.push<float>(2);  // vec2 of float
-  layout.push<float>(2);  // vec2 of float
-  va.addBuffer(vb, layout);
-
-  IndexBuffer ib{indices, 6};  // 6 indices will be drawn
-
-  glm::mat4 proj_matrix =
-      glm::ortho(0.0f, (float)m_width, 0.0f, (float)m_height, -1.0f, 1.0f);
-
-  glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-
-  Shader shader{"res/shaders/triangle_vf.shader"};
-  shader.bind();
-
-  Texture tex{"res/textures/grass.png"};
-  tex.bind();
-  shader.setUniform1i("u_Texture", 0);
-
-  va.unbind();
-  vb.unbind();
-  ib.unbind();
-  shader.unbind();
-
   Renderer re;
-  glm::vec3 translation{-100 + m_width / 2, -100 + m_height / 2, 0};
 
   Gui gui{this->m_window, false};
 
+  tests::Test* currentTest = nullptr;
+  tests::TestMenu* testMenu = new tests::TestMenu{currentTest};
+  currentTest = testMenu;
+
+  testMenu->registerTest<tests::TestClearColor>("TestClearColor");
+  testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
+
   while(!glfwWindowShouldClose(this->m_window)) {
-    // re.clear({0.1f, 0.9f, 0.2f, 1.0f});
     re.clear();
 
     gui.newFrame();
 
-    shader.bind();
+    if(currentTest) {
+      currentTest->onUpdate(0.0f);
+      currentTest->onRender();
+      ImGui::Begin("TestMenu");
+      if(currentTest != testMenu && ImGui::Button("<-")) {
+        delete currentTest;
+        currentTest = testMenu;
+      }
+      currentTest->onImGuiRender();
+      ImGui::End();
+    }
 
-    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translation);
-
-    /* P * V * M because opengl uses coloum-major matrices */
-    glm::mat4 mvp = proj_matrix * view_matrix * model_matrix;
-
-    shader.setUniformMat4f("u_MVP", mvp);
-
-    re.draw(va, ib, shader);
-
-    gui.drawSliders(translation, {m_width - 200, m_height - 200});
     gui.draw();
 
-    glfwSwapBuffers(this->m_window);
-    glfwPollEvents();
+    this->swapAndPoll();
   }
+
+  if(currentTest != testMenu) delete testMenu;
+  delete currentTest;
+}
+
+void GraphicsEngine::swapAndPoll() {
+  glfwSwapBuffers(this->m_window);
+  glfwPollEvents();
 }
 
 GLFWwindow* GraphicsEngine::getWindow() const {
   return m_window;
+}
+
+unsigned short GraphicsEngine::getWindowWidth() const {
+  return m_width;
+}
+unsigned short GraphicsEngine::getWindowHeight() const {
+  return m_height;
 }
 
 void GraphicsEngine::init() {
@@ -103,6 +98,14 @@ void GraphicsEngine::init() {
   /* Make the window's context current */
   glfwMakeContextCurrent(m_window);
 
+  /* Window's properties */
+  // glfwSetWindowAspectRatio(m_window, m_width, m_height);
+  // glfwSetWindowPos(m_window, 200, 150);
+  // GLFWmonitor* monitor = glfwGetWindowMonitor(m_window);
+  // const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+  // glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height,
+  //                      mode->refreshRate);
+
   /* Sincronizes the framerate with the monitors refresh rate */
   glfwSwapInterval(1);
 
@@ -118,12 +121,20 @@ void GraphicsEngine::init() {
 
   /* Print OpenGL Version */
   LOG(INFO) << "OpenGL Version: " << glGetString(GL_VERSION);
+  LOG(INFO) << "Renderer: " << glGetString(GL_RENDERER);
+  LOG(INFO) << "Vendor: " << glGetString(GL_VENDOR);
 
   /* Window initiated successfully */
   LOG(INFO) << "Window initiated successfully";
 
   /* Callbacks setting */
   glfwSetKeyCallback(this->m_window, inputs::handleKeyboard);
+}
+
+GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
+                                            const unsigned short& height) {
+  static GraphicsEngine s_Instance{width, height};
+  return s_Instance;
 }
 
 GraphicsEngine::GraphicsEngine(const unsigned short& width,

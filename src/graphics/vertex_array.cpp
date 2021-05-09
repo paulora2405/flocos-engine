@@ -1,5 +1,9 @@
 #include "graphics/vertex_array.hpp"
 
+#include "graphics/vertex_buffer.hpp"
+#include "graphics/vertex_buffer_layout.hpp"
+#include "logging/gl_error.hpp"
+
 namespace GE {
 
 void VertexArray::addBuffer(const VertexBuffer& vb,

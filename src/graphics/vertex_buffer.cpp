@@ -1,5 +1,7 @@
 #include "graphics/vertex_buffer.hpp"
 
+#include "logging/gl_error.hpp"
+
 namespace GE {
 
 void VertexBuffer::bind() const {
