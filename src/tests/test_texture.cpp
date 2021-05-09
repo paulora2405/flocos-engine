@@ -42,7 +42,7 @@ TestTexture2D::TestTexture2D()
   /*                            6 indices will be drawn */
   m_IB = std::make_unique<GE::IndexBuffer>(indices, 6);
 
-  m_Shader = std::make_unique<GE::Shader>("res/shaders/triangle_vf.shader");
+  m_Shader = std::make_unique<GE::Shader>("res/shaders/tex_quad_vf.shader");
   m_Shader->bind();
 
   m_Texture = std::make_unique<GE::Texture>("res/textures/grass.png");
