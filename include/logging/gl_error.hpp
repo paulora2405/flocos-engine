@@ -3,22 +3,24 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <signal.h>
 
 #include "vendor/easylogging/easylogging++.hpp"
 
 #define ELPP_NO_DEFAULT_LOG_FILE
-#define ASSERT(x) \
-  if(!(x)) raise(SIGTRAP)
 
 #if defined(DEBUG)
-#define GLCALL(x)     \
-  GE::clearGlError(); \
-  x;                  \
-  ASSERT(GE::logGlCall())
+  #include <signal.h>
+  #define ASSERT(x) \
+    if(!(x)) raise(SIGTRAP)
+
+  #define GLCALL(x)     \
+    GE::clearGlError(); \
+    x;                  \
+    ASSERT(GE::logGlCall())
 #else
-#define GLCALL(x) x
-#define ELPP_DISABLE_DEBUG_LOGS
+  #define GLCALL(x) x
+  #define ASSERT(x)
+  #define ELPP_DISABLE_DEBUG_LOGS
 #endif
 
 namespace GE {
