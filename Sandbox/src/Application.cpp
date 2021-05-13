@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <fstream>
 #include <iostream>
@@ -13,6 +14,10 @@
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char const* argv[]) {
+  char tmp[256];
+  getcwd(tmp, 256);
+  std::cout << tmp << std::endl;
+
   /* Logger configuration */
   START_EASYLOGGINGPP(argc, argv);
   el::Configurations conf("configuration/logger-default.conf");
