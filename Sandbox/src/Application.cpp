@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
-#include <unistd.h>
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -14,9 +14,7 @@
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char const* argv[]) {
-  char tmp[256];
-  getcwd(tmp, 256);
-  std::cout << tmp << std::endl;
+  std::filesystem::current_path("/home/paulo/git/flocos-engine/");
 
   /* Logger configuration */
   START_EASYLOGGINGPP(argc, argv);
