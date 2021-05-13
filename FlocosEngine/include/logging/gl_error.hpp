@@ -8,7 +8,12 @@
 
 #define ELPP_NO_DEFAULT_LOG_FILE
 
-#if defined(DEBUG)
+#if defined(NDEBUG)
+  #define GLCALL(x) x
+  #define ASSERT(x)
+  #define ELPP_DISABLE_DEBUG_LOGS
+
+#else
   #include <signal.h>
   #define ASSERT(x) \
     if(!(x)) raise(SIGTRAP)
@@ -17,10 +22,6 @@
     GE::clearGlError(); \
     x;                  \
     ASSERT(GE::logGlCall())
-#else
-  #define GLCALL(x) x
-  #define ASSERT(x)
-  #define ELPP_DISABLE_DEBUG_LOGS
 #endif
 
 namespace GE {
