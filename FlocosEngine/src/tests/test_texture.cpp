@@ -19,10 +19,10 @@ TestTexture2D::TestTexture2D()
   LOG(DEBUG) << "Creating Texture 2D Test";
   //
   float positions[] = {
-      -50.0f, -50.0f, 0.0f, 0.0f,  // i=0 vec2 of pos, vec2 of tex bounds
-      +50.0f, -50.0f, 1.0f, 0.0f,  // i=1 vec2 of pos, vec2 of tex bounds
-      +50.0f, +50.0f, 1.0f, 1.0f,  // i=2 vec2 of pos, vec2 of tex bounds
-      -50.0f, +50.0f, 0.0f, 1.0f,  // i=3 vec2 of pos, vec2 of tex bounds
+      -50.0f, -50.0f, 0.0f, 0.0f,  // i=0 vec2 of pos |_ , vec2 of tex bounds
+      +50.0f, -50.0f, 1.0f, 0.0f,  // i=1 vec2 of pos _| , vec2 of tex bounds
+      +50.0f, +50.0f, 1.0f, 1.0f,  // i=2 vec2 of pos ‾| , vec2 of tex bounds
+      -50.0f, +50.0f, 0.0f, 1.0f,  // i=3 vec2 of pos |‾ , vec2 of tex bounds
   };
   unsigned int indices[] = {
       0, 1, 2, 2, 3, 0,  // 1st and 2nd triangles indices
@@ -44,7 +44,7 @@ TestTexture2D::TestTexture2D()
   m_Shader = std::make_unique<GE::Shader>("res/shaders/tex_quad_vf.shader");
   m_Shader->bind();
 
-  m_Texture = std::make_unique<GE::Texture>("res/textures/grass.png");
+  m_Texture = std::make_unique<GE::Texture>("res/textures/ant.png");
   m_Texture->bind();
   m_Shader->setUniform1i("u_Texture", 0);
 }
@@ -56,7 +56,7 @@ void TestTexture2D::onUpdate(float deltaTime) {
 }
 
 void TestTexture2D::onRender() {
-  GLCALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GLCALL(glClearColor(0.67f, 0.85f, 0.89f, 1.0f));
   GLCALL(glClear(GL_COLOR_BUFFER_BIT));
 
   GE::Renderer re;
