@@ -10,6 +10,7 @@
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
 #include "tests/test_clear_color.hpp"
+#include "tests/test_grid.hpp"
 #include "tests/test_texture.hpp"
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
@@ -28,6 +29,7 @@ void GraphicsEngine::mainLoop() {
 
   testMenu->registerTest<tests::TestClearColor>("TestClearColor");
   testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
+  testMenu->registerTest<tests::TestGrid>("TestGrid");
 
   while(!glfwWindowShouldClose(this->m_window)) {
     re.clear();
