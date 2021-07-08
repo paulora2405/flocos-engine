@@ -18,6 +18,7 @@ add_library(
 
   logging/gl_error.cpp
 
+  tests/test_batch_render.cpp
   tests/test_clear_color.cpp
   tests/test_grid.cpp
   tests/test_texture.cpp

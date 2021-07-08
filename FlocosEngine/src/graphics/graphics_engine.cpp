@@ -9,6 +9,7 @@
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
+#include "tests/test_batch_render.hpp"
 #include "tests/test_clear_color.hpp"
 #include "tests/test_grid.hpp"
 #include "tests/test_texture.hpp"
@@ -30,6 +31,7 @@ void GraphicsEngine::mainLoop() {
   testMenu->registerTest<tests::TestClearColor>("TestClearColor");
   testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
   testMenu->registerTest<tests::TestGrid>("TestGrid");
+  testMenu->registerTest<tests::TestBatchRender>("TestBatchRender");
 
   while(!glfwWindowShouldClose(this->m_window)) {
     re.clear();
