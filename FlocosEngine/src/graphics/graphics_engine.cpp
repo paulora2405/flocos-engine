@@ -85,10 +85,8 @@ void GraphicsEngine::init() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   /* Create a windowed mode window and its OpenGL context */
-  std::string window_name{std::to_string(m_width) + "x" +
-                          std::to_string(m_height)};
-  m_window =
-      glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
+  std::string window_name{std::to_string(m_width) + "x" + std::to_string(m_height)};
+  m_window = glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
   if(!m_window) {
     LOG(ERROR) << "GLFW COULD NOT CREATE THE WINDOW";
     glfwTerminate();
@@ -137,8 +135,7 @@ GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
   return s_Instance;
 }
 
-GraphicsEngine::GraphicsEngine(const unsigned short& width,
-                               const unsigned short& height)
+GraphicsEngine::GraphicsEngine(const unsigned short& width, const unsigned short& height)
     : m_width{width},
       m_height{height} {
   this->init();

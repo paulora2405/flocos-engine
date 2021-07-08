@@ -33,8 +33,8 @@ Texture::Texture(const std::string& filepath)
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-  GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA,
-                      GL_UNSIGNED_BYTE, m_LocalBuffer));
+  GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                      m_LocalBuffer));
   GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
 
   if(m_LocalBuffer) stbi_image_free(m_LocalBuffer);

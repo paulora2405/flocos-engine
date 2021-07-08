@@ -14,8 +14,7 @@ TestTexture2D::TestTexture2D()
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
       m_Translation1{200, 200, 0},
       m_Translation2{400, 200, 0},
-      m_ProjMatrix{glm::ortho(
-          0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
+      m_ProjMatrix{glm::ortho(0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
       m_ViewMatrix{glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))} {
   LOG(DEBUG) << "Creating Texture 2D Test";
   //
