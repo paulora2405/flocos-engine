@@ -22,6 +22,12 @@ int main(int argc, char const* argv[]) {
   el::Loggers::reconfigureLogger("default", conf);
   // el::Loggers::reconfigureAllLoggers(conf);
 
+#if defined(NDEBUG)
+  LOG(INFO) << "Release Mode";
+#else
+  LOG(INFO) << "Debug Mode";
+#endif
+
   //
   switch(argc) {
     case 1: {
