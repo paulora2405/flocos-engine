@@ -27,9 +27,14 @@ Texture::Texture(const std::string& filepath)
 
   GLCALL(glGenTextures(1, &m_RendererID));
   GLCALL(glBindTexture(GL_TEXTURE_2D, m_RendererID));
-
+#if 0  // ANTI-ALIASING
+  // https://gregs-blog.com/2008/01/17/opengl-texture-filter-parameters-explained/
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+#else
+  GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+  GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#endif
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
   GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
