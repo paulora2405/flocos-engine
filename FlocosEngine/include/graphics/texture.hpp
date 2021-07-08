@@ -22,6 +22,7 @@ public:
   void bind(unsigned int slot = 0) const;
   void unbind() const;
 
+  inline uint getTexID() const { return m_RendererID; }
   inline int getWidth() const { return m_Width; }
   inline int getHeight() const { return m_Height; }
 };
