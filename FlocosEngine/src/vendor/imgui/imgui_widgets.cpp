@@ -2091,6 +2091,7 @@ static void SanitizeFormatString(const char* fmt, char* fmt_out, size_t fmt_out_
             *(fmt_out++) = c;
     }
     *fmt_out = 0; // Zero-terminate
+    fmt_out_size += 0;
 }
 
 template<typename TYPE, typename SIGNEDTYPE>
