@@ -1,5 +1,7 @@
 #include "graphics/graphics_engine.hpp"
 
+#include <filesystem>
+
 #include "graphics/gui.hpp"
 #include "graphics/index_buffer.hpp"
 #include "graphics/renderer.hpp"
@@ -16,6 +18,9 @@
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
+
+/* Easylogging++ initialization */
+INITIALIZE_EASYLOGGINGPP
 
 namespace GE {
 
@@ -147,6 +152,23 @@ GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
 GraphicsEngine::GraphicsEngine(const unsigned short& width, const unsigned short& height)
     : m_width{width},
       m_height{height} {
+  std::filesystem::current_path("/home/paulo/git/flocos-engine/");
+
+  /* Logger configuration */
+  int argc = 0;
+  char const* argv[] = {""};
+  START_EASYLOGGINGPP(argc, argv);
+  el::Configurations conf("configuration/logger-default.conf");
+  el::Loggers::reconfigureLogger("default", conf);
+  // el::Loggers::reconfigureAllLoggers(conf);
+
+  LOG(INFO) << "Created GraphicsEngine instance";
+#if defined(NDEBUG)
+  LOG(INFO) << "Release Mode";
+#else
+  LOG(INFO) << "Debug Mode";
+#endif
+
   this->init();
 }
 
