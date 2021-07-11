@@ -88,8 +88,13 @@ void GraphicsEngine::init() {
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  /* Create a windowed mode window and its OpenGL context */
-  std::string window_name{std::to_string(m_width) + "x" + std::to_string(m_height)};
+/* Create a windowed mode window and its OpenGL context */
+#if defined(NDEBUG)
+  std::string mode = " (Release Mode)";
+#else
+  std::string mode = " (Debug Mode)";
+#endif
+  std::string window_name{std::to_string(m_width) + "x" + std::to_string(m_height) + mode};
   m_window = glfwCreateWindow(m_width, m_height, window_name.c_str(), NULL, NULL);
   if(!m_window) {
     LOG(ERROR) << "GLFW COULD NOT CREATE THE WINDOW";
