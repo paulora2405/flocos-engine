@@ -18,11 +18,12 @@ class TestGrid : public Test {
 private:
   u_short m_WinWidth;
   u_short m_WinHeight;
-  u_short m_GridM;
-  u_short m_GridN;
+  const u_short m_GridM;
+  const u_short m_GridN;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
   std::vector<glm::vec3> m_Translations;
+  std::vector<u_short> m_SelectedTexs;
   std::unique_ptr<GE::VertexArray> m_VAO;
   std::unique_ptr<GE::VertexBuffer> m_VB;
   std::unique_ptr<GE::IndexBuffer> m_IB;

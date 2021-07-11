@@ -12,11 +12,12 @@ namespace tests {
 TestGrid::TestGrid()
     : m_WinWidth{GE::GraphicsEngine::getInstance().getWindowWidth()},
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
-      m_GridM{20},
-      m_GridN{20},
+      m_GridM{30},
+      m_GridN{30},
       m_ProjMatrix{glm::ortho(0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
       m_ViewMatrix{glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))},
-      m_Translations{} {
+      m_Translations{},
+      m_SelectedTexs{} {
   LOG(DEBUG) << "Creating Grid Test";
   //
 
@@ -29,10 +30,12 @@ TestGrid::TestGrid()
     for(size_t j = 0; j < m_GridN; j++)
       m_Translations.push_back(glm::vec3{offset * i, offset * j, 0});
 
+  LOG(DEBUG) << "m_Translations.size() = " << m_Translations.size();
+
   float offX = (m_WinHeight < m_WinWidth) * ((m_WinWidth - m_WinHeight) / 2);
   float offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
 
-  LOG(DEBUG) << "Initial Pos offset x-y:" << offX << '-' << offY;
+  LOG(DEBUG) << "Initial Pos offset x-y: " << offX << '-' << offY;
 
   float positions[] = {
       offX,          offY,          0.0f, 0.0f,  // i=0 vec2 of pos |_ , vec2 of tex bounds
@@ -78,20 +81,19 @@ void TestGrid::onRender() {
   GE::Renderer re;
   m_Texture->bind();
 
-  for(size_t i = 0; i < m_GridM; i++) {
-    for(size_t j = 0; j < m_GridN; j++) {
-      if((i + j) & 1 or true) {
-        glm::mat4 model_matrix =
-            glm::translate(glm::mat4(1.0f), m_Translations.at(i * m_GridM + j));
-        /* P * V * M because opengl uses coloum-major matrices */
-        glm::mat4 mvp = m_ProjMatrix * m_ViewMatrix * model_matrix;
+  // for(size_t i = 0; i < m_GridM; i++) {
+  //   for(size_t j = 0; j < m_GridN; j++) {
+  for(size_t i = 0; i < m_GridM * m_GridN; i++) {
+    glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), m_Translations.at(i));
+    /* P * V * M because opengl uses coloum-major matrices */
+    glm::mat4 mvp = m_ProjMatrix * m_ViewMatrix * model_matrix;
 
-        m_Shader->bind();
-        m_Shader->setUniformMat4f("u_MVP", mvp);
-        re.draw(*m_VAO, *m_IB, *m_Shader);
-      }
-    }
+    m_Shader->bind();
+    m_Shader->setUniformMat4f("u_MVP", mvp);
+    re.draw(*m_VAO, *m_IB, *m_Shader);
   }
+  //   }
+  // }
 }
 
 void TestGrid::onImGuiRender() {
