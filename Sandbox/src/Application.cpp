@@ -31,7 +31,7 @@ int main(int argc, char const* argv[]) {
   //
   switch(argc) {
     case 1: {
-      GE::GraphicsEngine::getInstance().mainLoop();
+      GE::GraphicsEngine::getInstance(1600, 900).mainLoop();
       break;
     }
 
