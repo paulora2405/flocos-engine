@@ -20,19 +20,25 @@ private:
   u_short m_WinHeight;
   u_short m_GridM;
   u_short m_GridN;
+  std::unique_ptr<float[]> m_Positions;
+  size_t m_PosSize;
+  std::unique_ptr<uint[]> m_Indices;
+  size_t m_IndSize;
+  bool m_Initiated;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
   std::unique_ptr<GE::VertexArray> m_VAO;
   std::unique_ptr<GE::VertexBuffer> m_VB;
+  std::unique_ptr<GE::VertexBufferLayout> m_VBL;
   std::unique_ptr<GE::IndexBuffer> m_IB;
   std::unique_ptr<GE::Shader> m_Shader;
-  std::unique_ptr<GE::Texture> m_Texture1;
-  std::unique_ptr<GE::Texture> m_Texture2;
-  std::unique_ptr<GE::Texture> m_Texture3;
 
 public:
   TestBatchRender();
   ~TestBatchRender();
+
+  void init();
+  void changePosArray();
 
   void onUpdate(float deltaTime) override;
   void onRender() override;
