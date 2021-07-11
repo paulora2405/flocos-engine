@@ -37,8 +37,8 @@ public:
    * @param[in] height Height of the window (defaults to 640).
    * @returns A reference to the single Class instance.
    */
-  static GraphicsEngine& getInstance(const unsigned short& width = 1280,
-                                     const unsigned short& height = 720);
+  static GraphicsEngine& getInstance(const unsigned short& width = 1600,
+                                     const unsigned short& height = 900);
 
   /// @brief The copy constructor is forbidden.
   GraphicsEngine(const GraphicsEngine&) = delete;
