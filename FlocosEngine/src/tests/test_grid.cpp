@@ -70,8 +70,8 @@ TestGrid::TestGrid()
 
 TestGrid::~TestGrid() {}
 
-void TestGrid::onUpdate(float deltaTime) {
-  deltaTime += 0;
+void TestGrid::onUpdate(float &deltaTime) {
+  deltaTime = deltaTime;
 }
 
 void TestGrid::onRender() {

@@ -14,7 +14,7 @@ public:
   TestClearColor();
   ~TestClearColor();
 
-  void onUpdate(float deltaTime) override;
+  void onUpdate(float &deltaTime) override;
   void onRender() override;
   void onImGuiRender() override;
 };

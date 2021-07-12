@@ -51,8 +51,8 @@ TestTexture2D::TestTexture2D()
 
 TestTexture2D::~TestTexture2D() {}
 
-void TestTexture2D::onUpdate(float deltaTime) {
-  deltaTime += 0;
+void TestTexture2D::onUpdate(float &deltaTime) {
+  deltaTime = deltaTime;
 }
 
 void TestTexture2D::onRender() {
@@ -82,11 +82,11 @@ void TestTexture2D::onRender() {
 }
 
 void TestTexture2D::onImGuiRender() {
-  ImGui::SliderFloat("X1", (float*)&m_Translation1.x, 0.0f, (float)m_WinWidth);
-  ImGui::SliderFloat("Y1", (float*)&m_Translation1.y, 0.0f, (float)m_WinHeight);
+  ImGui::SliderFloat("X1", (float *)&m_Translation1.x, 0.0f, (float)m_WinWidth);
+  ImGui::SliderFloat("Y1", (float *)&m_Translation1.y, 0.0f, (float)m_WinHeight);
 
-  ImGui::SliderFloat("X2", (float*)&m_Translation2.x, 0.0f, (float)m_WinWidth);
-  ImGui::SliderFloat("Y2", (float*)&m_Translation2.y, 0.0f, (float)m_WinHeight);
+  ImGui::SliderFloat("X2", (float *)&m_Translation2.x, 0.0f, (float)m_WinWidth);
+  ImGui::SliderFloat("Y2", (float *)&m_Translation2.y, 0.0f, (float)m_WinHeight);
 }
 
 }  // namespace tests

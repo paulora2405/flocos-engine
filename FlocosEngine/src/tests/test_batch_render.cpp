@@ -120,8 +120,8 @@ void TestBatchRender::onRender() {
   }
 }
 
-void TestBatchRender::onUpdate(float deltaTime) {
-  deltaTime += 0;
+void TestBatchRender::onUpdate(float &deltaTime) {
+  deltaTime = deltaTime;
 }
 
 void TestBatchRender::onImGuiRender() {

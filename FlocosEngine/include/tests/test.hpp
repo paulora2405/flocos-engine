@@ -13,7 +13,7 @@ public:
   Test() {}
   virtual ~Test() {}
 
-  virtual void onUpdate(float deltaTime) { deltaTime += 0; }
+  virtual void onUpdate(float &deltaTime) { deltaTime = deltaTime; }
   virtual void onRender() {}
   virtual void onImGuiRender() {}
 };
