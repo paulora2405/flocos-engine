@@ -11,6 +11,7 @@
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
+#include "tests/test_ants.hpp"
 #include "tests/test_batch_render.hpp"
 #include "tests/test_clear_color.hpp"
 #include "tests/test_grid.hpp"
@@ -37,6 +38,8 @@ void GraphicsEngine::mainLoop() {
   testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
   testMenu->registerTest<tests::TestGrid>("TestGrid");
   testMenu->registerTest<tests::TestBatchRender>("TestBatchRender");
+  testMenu->registerTest<tests::TestAnts>("Ants Simulation");
+  float timeDelta = 0.0f;
 
   while(!glfwWindowShouldClose(this->m_window)) {
     re.clear();
@@ -44,7 +47,7 @@ void GraphicsEngine::mainLoop() {
     gui.newFrame();
 
     if(currentTest) {
-      currentTest->onUpdate(0.0f);
+      currentTest->onUpdate(timeDelta);
       currentTest->onRender();
       ImGui::Begin("TestMenu");
       if(currentTest != testMenu && ImGui::Button("<-")) {
@@ -60,7 +63,8 @@ void GraphicsEngine::mainLoop() {
     this->swapAndPoll();
   }
 
-  if(currentTest != testMenu) delete testMenu;
+  if(currentTest != testMenu)
+    delete testMenu;
   delete currentTest;
 }
 
