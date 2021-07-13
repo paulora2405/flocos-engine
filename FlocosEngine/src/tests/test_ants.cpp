@@ -110,13 +110,13 @@ void TestAnts::updateGrid() {
 
     if(state == SIM::GridState::Empty)
       r = g = b = a = 1.0f;
-    if(state == SIM::GridState::AliveFree)
+    else if(state == SIM::GridState::AliveFree)
       r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::DeadFree)
+    else if(state == SIM::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::BothFree)
+    else if(state == SIM::GridState::BothFree)
       r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::AliveBusy)
+    else if(state == SIM::GridState::AliveBusy)
       r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
     for(size_t j = 0; j < 4; j++) {
@@ -138,7 +138,7 @@ void TestAnts::onUpdate(float &deltaTime) {
   deltaTime = deltaTime;
   static uint tick = 1;
   if(!m_Paused and m_Initiated) {
-    if(tick++ >= 5) {
+    if(tick++ >= 8) {
       updateGrid();
       tick = 1;
     }
