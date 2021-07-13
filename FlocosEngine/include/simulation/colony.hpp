@@ -25,7 +25,7 @@ private:
   const u_short m_AntVisionRadius;
   u_short m_GridM;
   u_short m_GridN;
-  std::vector<std::unique_ptr<SIM::Ant>> m_Ants;
+  std::vector<std::unique_ptr<SIM::Ant>> m_AliveAnts;
   std::vector<std::unique_ptr<SIM::DeadAnt>> m_DeadAnts;
 
 public:

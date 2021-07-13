@@ -2,7 +2,7 @@
 #define ANT_HPP
 
 #include <memory>
-#include <random>
+#include <vector>
 
 #include "vendor/glm/glm.hpp"
 
@@ -20,11 +20,10 @@ private:
   AntState m_State;
   Pos m_Pos;
   static u_short s_VisionRadius;
-  static std::default_random_engine gen;
-  static std::uniform_int_distribution<uint> directionChoice;
 
 public:
   Ant(uint x, uint y);
+  Ant(uint x, uint y, AntState);
   ~Ant();
 
   static void setRadius(u_short radius);

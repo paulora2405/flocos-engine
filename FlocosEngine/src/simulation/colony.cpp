@@ -8,21 +8,25 @@ namespace SIM {
 
 void Colony::iterate() {
   Pos newPos;
-  for(auto &ant : m_Ants) {
+  std::vector<std::unique_ptr<Ant>> newAnts{(size_t)(m_GridM * m_GridN)};
+
+  for(auto &ant : m_AliveAnts) {
     if(ant != nullptr) {
-      newPos = ant.get()->move(m_Ants, m_GridM, m_GridN);
-      ant.swap(m_Ants[newPos.x * m_GridM + newPos.y]);
+      newPos = ant.get()->move(m_AliveAnts, m_GridM, m_GridN);
+      newAnts[newPos.x * m_GridM + newPos.y] =
+          std::make_unique<Ant>(newPos.x, newPos.y, ant.get()->getState());
     }
   }
+  m_AliveAnts = std::move(newAnts);
 }
 
 GridState Colony::query(uint x, uint y) {
-  if(m_Ants[x * m_GridM + y] == nullptr and m_DeadAnts[x * m_GridM + y] == nullptr)
+  if(m_AliveAnts[x * m_GridM + y] == nullptr and m_DeadAnts[x * m_GridM + y] == nullptr)
     return GridState::Empty;
 
-  if(m_Ants[x * m_GridM + y] != nullptr) {
+  if(m_AliveAnts[x * m_GridM + y] != nullptr) {
     if(m_DeadAnts[x * m_GridM + y] != nullptr) {
-      if(m_Ants[x * m_GridM + y].get()->getState() == AntState::Busy)
+      if(m_AliveAnts[x * m_GridM + y].get()->getState() == AntState::Busy)
         return GridState::AliveBusy;
       return GridState::BothFree;
     }
@@ -41,28 +45,28 @@ Colony::Colony(const u_short &gridM,
       m_AntVisionRadius{AntVisionRadius},
       m_GridM{gridM},
       m_GridN{gridN},
-      m_Ants{(size_t)(m_GridM * m_GridN)},
+      m_AliveAnts{(size_t)(m_GridM * m_GridN)},
       m_DeadAnts{(size_t)(m_GridM * m_GridN)} {
   //
 
   /* TODO: Checar se quantidade de formiga eh maior que total de celulas */
 
-  LOG(DEBUG) << "Colony Constructed";
-  LOG(DEBUG) << "m_Ants.size() = " << m_Ants.size();
-  LOG(DEBUG) << "m_DeadAnts.size() = " << m_DeadAnts.size();
+  LOG(DEBUG) << "Colony Constructed (" << gridM * gridN << " cells)";
+  // LOG(DEBUG) << "m_AliveAnts.size() = " << m_AliveAnts.size();
+  // LOG(DEBUG) << "m_DeadAnts.size() = " << m_DeadAnts.size();
 
   SIM::Ant::setRadius(m_AntVisionRadius);
 
-  static std::default_random_engine gen;
-  static std::uniform_int_distribution<uint> distM(0, gridM - 1);
-  static std::uniform_int_distribution<uint> distN(0, gridN - 1);
+  std::default_random_engine gen;
+  std::uniform_int_distribution<uint> distM(0, gridM - 1);
+  std::uniform_int_distribution<uint> distN(0, gridN - 1);
 
   for(size_t k = 0; k < m_AliveAntsQnt; k++) {
     uint i, j;
     do {
       i = distM(gen), j = distN(gen);
-    } while(m_Ants[i * m_GridM + j] != nullptr);
-    m_Ants[i * m_GridM + j] = std::make_unique<SIM::Ant>(i, j);
+    } while(m_AliveAnts[i * m_GridM + j] != nullptr);
+    m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM::Ant>(i, j);
   }
 
   for(size_t k = 0; k < m_DeadAntsQnt; k++) {

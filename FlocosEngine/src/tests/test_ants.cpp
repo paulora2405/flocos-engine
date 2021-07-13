@@ -12,6 +12,7 @@ namespace tests {
 
 void TestAnts::init() {
   LOG(INFO) << "Initializing Ants Simulation Test";
+  LOG(DEBUG) << "Initializing Ants Simulation Test";
   float offX = (m_WinHeight < m_WinWidth) * ((m_WinWidth - m_WinHeight) / 2);
   float offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
   float cellOffset = (m_WinWidth <= m_WinHeight) * ((float)m_WinWidth / (float)m_GridM) +
@@ -21,11 +22,7 @@ void TestAnts::init() {
   m_PosSize = cellsTotal * 4 * 6;
   m_IndSize = cellsTotal * 6;
 
-  // LOG(DEBUG) << "CellsTotal = " << cellsTotal << " ; PosSize = " << m_PosSize
-  //            << " ; IndSize = " << m_IndSize;
-  // LOG(DEBUG) << "Initial Pos cellOffset x-y: " << offX << '-' << offY;
-  // LOG(DEBUG) << "Grid " << m_GridM << 'x' << m_GridN << " (cellOffset = " << cellOffset
-  //            << " pixels)";
+  m_Colony = std::make_unique<SIM::Colony>(m_GridM, m_GridN, m_AliveQnt, m_DeadQnt, m_VisionRadius);
 
   m_Positions = std::make_unique<float[]>(m_PosSize);
   m_Indices = std::make_unique<uint[]>(m_IndSize);
@@ -34,7 +31,6 @@ void TestAnts::init() {
   for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
     SIM::GridState state = m_Colony.get()->query(m, n);
-    // LOG(DEBUG) << "(M,N) = " << m << ',' << n << " -> " << (uint)state;
     float r, g, b, a;
 
     if(state == SIM::GridState::Empty)
@@ -55,8 +51,6 @@ void TestAnts::init() {
       m_Positions[i + 5 + j * 6] = a;
     }
 
-    // inverted = !inverted;
-
     // vec2 of positions
     m_Positions[i + 0] = offX;  //               index=0 |_
     m_Positions[i + 1] = offY;
@@ -72,7 +66,6 @@ void TestAnts::init() {
       offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
       n = 0;
       m++;
-      // if(!(m_GridN & 1)) inverted = !inverted;
     } else {
       offY += cellOffset;
     }
@@ -124,7 +117,7 @@ void TestAnts::updateGrid() {
     if(state == SIM::GridState::BothFree)
       r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
     if(state == SIM::GridState::AliveBusy)
-      r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
+      r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
     for(size_t j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = r;
@@ -204,26 +197,28 @@ void TestAnts::onImGuiRender() {
 
     if(ImGui::Button("Confirm")) {
       char empty[] = "";
-      if(strcmp(mSize, empty) and strcmp(nSize, empty) and strcmp(aliveAntsQnt, empty) and
-         strcmp(deadAntsQnt, empty) and strcmp(antsVisionRadius, empty)) {
+      if(strcmp(mSize, empty) and strcmp(nSize, empty)) {
         m_GridM = atoi(mSize);
         m_GridN = atoi(nSize);
-        m_AliveQnt = atoi(aliveAntsQnt);
-        m_DeadQnt = atoi(deadAntsQnt);
-        m_VisionRadius = atoi(antsVisionRadius);
+        m_AliveQnt = strcmp(aliveAntsQnt, empty) ? atoi(aliveAntsQnt) : (m_GridM * m_GridN) / 8;
+        m_DeadQnt = strcmp(deadAntsQnt, empty) ? atoi(deadAntsQnt) : (m_GridM * m_GridN) / 8;
+        m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 2;
       }
       m_Initiated = true;
-      LOG(DEBUG) << "Colony Param: " << m_GridM << ',' << m_GridN << ',' << m_AliveQnt << ','
-                 << m_DeadQnt << ',' << m_VisionRadius;
-      m_Colony =
-          std::make_unique<SIM::Colony>(m_GridM, m_GridN, m_AliveQnt, m_DeadQnt, m_VisionRadius);
+      // LOG(DEBUG) << "Colony Param: " << m_GridM << ',' << m_GridN << ',' << m_AliveQnt << ','
+      //            << m_DeadQnt << ',' << m_VisionRadius;
       this->init();
     }
     // ImGui::TextDisabled("If either input is left empty,\n the default grid will be
     // initialized.");
   } else {
-    if(ImGui::Button("Pause")) {
+    static std::string pauseText{"Start"};
+    if(ImGui::Button(pauseText.c_str())) {
       m_Paused = !m_Paused;
+      if(m_Paused)
+        pauseText = "Continue";
+      else
+        pauseText = "Pause";
     }
     if(m_Paused)
       if(ImGui::Button("Update One Tick"))
@@ -238,15 +233,15 @@ TestAnts::TestAnts()
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
       m_GridM{200},
       m_GridN{200},
-      m_AliveQnt{2000},
-      m_DeadQnt{2000},
+      m_AliveQnt{5000},
+      m_DeadQnt{5000},
       m_VisionRadius{2},
       m_Positions{},
       m_PosSize{0},
       m_Indices{},
       m_IndSize{0},
       m_Initiated{false},
-      m_Paused{false},
+      m_Paused{true},
       m_ProjMatrix{glm::ortho(0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
       m_ViewMatrix{glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))},
       m_Colony{} {
