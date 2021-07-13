@@ -2,13 +2,12 @@
 #define TEST_BATCH_RENDER_HPP
 
 #include <memory>
-#include <vector>
 
 #include "graphics/index_buffer.hpp"
 #include "graphics/shader.hpp"
-#include "graphics/texture.hpp"
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
+#include "graphics/vertex_buffer_layout.hpp"
 #include "tests/test.hpp"
 #include "vendor/glm/glm.hpp"
 

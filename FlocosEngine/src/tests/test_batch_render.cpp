@@ -32,9 +32,18 @@ void TestBatchRender::init() {
   m_Positions = std::make_unique<float[]>(m_PosSize);
   m_Indices = std::make_unique<uint[]>(m_IndSize);
 
-  float r = 0.1f;
+  bool inverted = false;
   uint n = 0;
   for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
+    // vec4 of rgba
+    for(size_t j = 0; j < 4; j++) {
+      m_Positions[i + 2 + j * 6] = inverted ? 0.2f : 0.78f;
+      m_Positions[i + 3 + j * 6] = inverted ? 0.85f : 0.0f;
+      m_Positions[i + 4 + j * 6] = inverted ? 1.0f : 0.22f;
+      m_Positions[i + 5 + j * 6] = 1.0f;
+    }
+    inverted = !inverted;
+
     // vec2 of positions
     m_Positions[i + 0] = offX;  //            index=0 |_
     m_Positions[i + 1] = offY;
@@ -49,17 +58,10 @@ void TestBatchRender::init() {
       offX += cellOffset;
       offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
       n = 0;
-    } else
+      if(!(m_GridN & 1)) inverted = !inverted;
+    } else {
       offY += cellOffset;
-
-    // vec4 of rgba
-    for(size_t j = 0; j < 4; j++) {
-      m_Positions[i + 2 + j * 6] = r;
-      m_Positions[i + 3 + j * 6] = 0.4f;
-      m_Positions[i + 4 + j * 6] = 0.3f;
-      m_Positions[i + 5 + j * 6] = 1.0f;
     }
-    // r = r >= 1.0f ? 0.1f : r + 0.1f;
   }
 
   uint indStep = 0;
@@ -90,12 +92,17 @@ void TestBatchRender::changePosArray() {
 
   for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
-    float r = dist(generator), g = dist(generator), b = dist(generator);
+    float r = dist(generator);  //, g = dist(generator), b = dist(generator), a = dist(generator);
+    bool white = (r > 0.1f);
     for(size_t j = 0; j < 4; j++) {
-      m_Positions[i + 2 + j * 6] = r;
-      m_Positions[i + 3 + j * 6] = g;
-      m_Positions[i + 4 + j * 6] = b;
-      m_Positions[i + 5 + j * 6] = 1.0f;
+      // m_Positions[i + 2 + j * 6] = r;
+      // m_Positions[i + 3 + j * 6] = g;
+      // m_Positions[i + 4 + j * 6] = b;
+      // m_Positions[i + 5 + j * 6] = a;
+      m_Positions[i + 2 + j * 6] = white ? 1.0f : 0.0f;
+      m_Positions[i + 3 + j * 6] = white ? 1.0f : 0.0f;
+      m_Positions[i + 4 + j * 6] = white ? 1.0f : 0.0f;
+      m_Positions[i + 5 + j * 6] = white ? 1.0f : 0.0f;
     }
   }
   m_VB = std::make_unique<GE::VertexBuffer>(m_Positions.get(), m_PosSize * sizeof(float));
@@ -103,10 +110,11 @@ void TestBatchRender::changePosArray() {
 }
 
 void TestBatchRender::onRender() {
+  // GLCALL(glClearColor(0.67f, 0.85f, 0.89f, 1.0f));
+  GLCALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  // GLCALL(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
+  GLCALL(glClear(GL_COLOR_BUFFER_BIT));
   if(m_Initiated) {
-    GLCALL(glClearColor(0.67f, 0.85f, 0.89f, 1.0f));
-    GLCALL(glClear(GL_COLOR_BUFFER_BIT));
-
     GE::Renderer re;
     // m_Texture1->bind();
 
@@ -128,12 +136,13 @@ void TestBatchRender::onImGuiRender() {
   if(!m_Initiated) {
     ImGui::Text("Enter the size MxN of the Grid:");
     static char mSize[5] = "";
-    // ImGui::InputText("M", mSize, 5, ImGuiInputTextFlags_CharsDecimal);
-    ImGui::PushItemWidth(40);
-    ImGui::InputTextWithHint("M value", "10", mSize, 5, ImGuiInputTextFlags_CharsDecimal);
     static char nSize[5] = "";
-    // ImGui::InputText("N", nSize, 5, ImGuiInputTextFlags_CharsDecimal);
-    ImGui::InputTextWithHint("N value", "10", nSize, 5, ImGuiInputTextFlags_CharsDecimal);
+    ImGui::PushItemWidth(40);
+    ImGui::InputTextWithHint("x", std::to_string(m_GridM).c_str(), mSize, 5,
+                             ImGuiInputTextFlags_CharsDecimal);
+    ImGui::SameLine();
+    ImGui::InputTextWithHint("", std::to_string(m_GridN).c_str(), nSize, 5,
+                             ImGuiInputTextFlags_CharsDecimal);
     ImGui::PopItemWidth();
 
     if(ImGui::Button("Confirm")) {
@@ -156,8 +165,8 @@ void TestBatchRender::onImGuiRender() {
 TestBatchRender::TestBatchRender()
     : m_WinWidth{GE::GraphicsEngine::getInstance().getWindowWidth()},
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
-      m_GridM{10},
-      m_GridN{10},
+      m_GridM{150},
+      m_GridN{150},
       m_Positions{nullptr},
       m_PosSize{0},
       m_Indices{nullptr},
