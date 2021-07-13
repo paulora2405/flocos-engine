@@ -15,7 +15,9 @@ int main(int argc, char const* argv[]) {
     }
 
     default: {
-      break;
+      std::cerr << "ARGUMENT ERROR: 0 or 2 Arguments Possible: Width, Height." << std::endl;
+      return EXIT_FAILURE;
     }
   }
+  return EXIT_SUCCESS;
 }
