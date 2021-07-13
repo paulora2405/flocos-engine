@@ -9,8 +9,7 @@
 
 namespace GE {
 
-void Shader::setUniform4f(
-    const std::string& name, float v0, float v1, float v2, float v3) {
+void Shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
   GLCALL(glUniform4f(this->getUniformLocation(name), v0, v1, v2, v3));
 }
 
@@ -23,15 +22,14 @@ void Shader::setUniform1i(const std::string& name, int value) {
 }
 
 void Shader::setUniformMat4f(const std::string& name, const glm::mat4& matrix) {
-  GLCALL(glUniformMatrix4fv(this->getUniformLocation(name), 1, GL_FALSE,
-                            &matrix[0][0]));
+  GLCALL(glUniformMatrix4fv(this->getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
 
 int Shader::getUniformLocation(const std::string& name) const {
   if(m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
     return m_UniformLocationCache[name];
 
-  LOG(DEBUG) << "Uniform " << name << " not found on cache";
+  // LOG(DEBUG) << "Uniform " << name << " not found on cache";
 
   GLCALL(int location = glGetUniformLocation(m_RendererID, name.c_str()));
   if(location == -1)
@@ -49,12 +47,7 @@ ShaderProgramSource Shader::parseShader(const std::string& filepath) {
     exit(EXIT_FAILURE);
   }
 
-  enum class ShaderType
-  {
-    NONE = -1,
-    VERTEX = 0,
-    FRAGMENT = 1
-  };
+  enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
 
   std::string line;
   std::stringstream ss[2];
@@ -74,8 +67,7 @@ ShaderProgramSource Shader::parseShader(const std::string& filepath) {
   return {ss[0].str(), ss[1].str()};
 }
 
-unsigned int Shader::compileShader(unsigned int type,
-                                   const std::string& source) {
+unsigned int Shader::compileShader(unsigned int type, const std::string& source) {
   unsigned int id = glCreateShader(type);
   const char* src = source.c_str();
   glShaderSource(id, 1, &src, nullptr);
@@ -88,8 +80,7 @@ unsigned int Shader::compileShader(unsigned int type,
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
     char* message = (char*)alloca(length * sizeof(char));
     glGetShaderInfoLog(id, length, &length, message);
-    LOG(ERROR) << "FAILED TO COMPILE "
-               << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
+    LOG(ERROR) << "FAILED TO COMPILE " << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT")
                << " SHADER";
     /* Strips the '\n' included in the string */
     message[strlen(message) - 1] = '\0';
@@ -127,10 +118,8 @@ void Shader::unbind() const {
   GLCALL(glUseProgram(0));
 }
 
-Shader::Shader(const std::string& filepath)
-    : m_Filepath{filepath},
-      m_RendererID{0} {
-  LOG(DEBUG) << "Parsing and compiling shader on " << filepath;
+Shader::Shader(const std::string& filepath) : m_Filepath{filepath}, m_RendererID{0} {
+  // LOG(DEBUG) << "Parsing and compiling shader on " << filepath;
   ShaderProgramSource source = this->parseShader(filepath);
   m_RendererID = this->createShader(source.VertexSource, source.FragmentSource);
 }
