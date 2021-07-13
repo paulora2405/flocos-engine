@@ -45,8 +45,7 @@ Pos Ant::move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
   if(ants[newPos.x * gridM + newPos.y] != nullptr)
     return m_Pos;
 
-  m_Pos = newPos;
-  return m_Pos;
+  return newPos;
 }
 
 void Ant::drop() {}

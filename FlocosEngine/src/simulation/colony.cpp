@@ -13,8 +13,13 @@ void Colony::iterate() {
   for(auto &ant : m_AliveAnts) {
     if(ant != nullptr) {
       newPos = ant.get()->move(m_AliveAnts, m_GridM, m_GridN);
-      newAnts[newPos.x * m_GridM + newPos.y] =
-          std::make_unique<Ant>(newPos.x, newPos.y, ant.get()->getState());
+
+      if(newAnts[newPos.x * m_GridM + newPos.y] == nullptr)
+        newAnts[newPos.x * m_GridM + newPos.y] =
+            std::make_unique<Ant>(newPos.x, newPos.y, ant.get()->getState());
+      else
+        newAnts[ant.get()->getPos().x * m_GridM + ant.get()->getPos().y] = std::make_unique<Ant>(
+            ant.get()->getPos().x, ant.get()->getPos().y, ant.get()->getState());
     }
   }
   m_AliveAnts = std::move(newAnts);
