@@ -16,8 +16,12 @@ add_library(
 
   inputs/inputs.cpp
 
+  simulation/ant.cpp
+  simulation/colony.cpp
+
   logging/gl_error.cpp
 
+  tests/test_ants.cpp
   tests/test_batch_render.cpp
   tests/test_clear_color.cpp
   tests/test_grid.cpp
