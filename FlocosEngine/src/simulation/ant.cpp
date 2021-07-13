@@ -18,6 +18,10 @@ AntState Ant::getState() const {
   return m_State;
 }
 
+Pos Ant::getPos() const {
+  return m_Pos;
+}
+
 Pos Ant::move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
               const u_short &gridM,
               const u_short &gridN) {

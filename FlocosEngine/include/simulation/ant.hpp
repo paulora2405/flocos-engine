@@ -29,6 +29,7 @@ public:
   static void setRadius(u_short radius);
 
   AntState getState() const;
+  Pos getPos() const;
 
   Pos move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
            const u_short &gridM,
