@@ -14,14 +14,6 @@ Ant::Ant(uint x, uint y, AntState s) : m_State{s}, m_Pos{x, y} {}
 
 Ant::~Ant() {}
 
-AntState Ant::getState() const {
-  return m_State;
-}
-
-Pos Ant::getPos() const {
-  return m_Pos;
-}
-
 Pos Ant::move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
               const u_short &gridM,
               const u_short &gridN) {
@@ -33,6 +25,7 @@ Pos Ant::move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
   if(direction == 0)
     return m_Pos;
 
+  // TODO: Diagonal Movement
   if(direction == 1)  // UP
     newPos.y = (m_Pos.y + 1) % gridN;
   else if(direction == 2)  // RIGHT
@@ -48,12 +41,66 @@ Pos Ant::move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
   return newPos;
 }
 
-void Ant::drop() {}
+void Ant::drop() {
+  m_State = AntState::Free;
+}
 
-void Ant::take() {}
+void Ant::take() {
+  m_State = AntState::Busy;
+}
 
-uint Ant::lookAndCount() {
-  return 0;
+uint Ant::lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
+                       const u_short &gridM,
+                       const u_short &gridN) {
+  uint x = m_Pos.x;
+  uint y = m_Pos.y;
+  uint closeDeadAnt = 0;
+  for(size_t i = 0; i <= s_VisionRadius; i++) {
+    for(size_t j = 0; j <= s_VisionRadius; j++) {
+      if(i == 0 and j == 0)
+        continue;
+
+      if(i == 0) {
+        if((x + i) < gridM and (y >= j) and deadAnts[(x + i) * gridM + (y - j)] != nullptr)
+          closeDeadAnt++;
+        if((x >= i) and (y + j) < gridN and deadAnts[(x - i) * gridM + (y + j)] != nullptr)
+          closeDeadAnt++;
+
+      } else if(j == 0) {
+        if((x + i) < gridM and (y + j) < gridN and deadAnts[(x + i) * gridM + (y + j)] != nullptr)
+          closeDeadAnt++;
+        if((x >= i) and (y >= j) and deadAnts[(x - i) * gridM + (y - j)] != nullptr)
+          closeDeadAnt++;
+
+      } else {
+        if((x + i) < gridM and (y + j) < gridN and deadAnts[(x + i) * gridM + (y + j)] != nullptr)
+          closeDeadAnt++;
+
+        if((x + i) < gridM and (y >= j) and deadAnts[(x + i) * gridM + (y - j)] != nullptr)
+          closeDeadAnt++;
+
+        if((x >= i) and (y >= j) and deadAnts[(x - i) * gridM + (y - j)] != nullptr)
+          closeDeadAnt++;
+
+        if((x >= i) and (y + j) < gridN and deadAnts[(x - i) * gridM + (y + j)] != nullptr)
+          closeDeadAnt++;
+      }
+    }
+  }
+
+  return closeDeadAnt;
+}
+
+AntState Ant::getState() const {
+  return m_State;
+}
+
+Pos Ant::getPos() const {
+  return m_Pos;
+}
+
+u_short Ant::getRadius() {
+  return Ant::s_VisionRadius;
 }
 
 void Ant::setRadius(u_short radius) {

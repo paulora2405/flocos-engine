@@ -1,10 +1,35 @@
 #include "simulation/colony.hpp"
 
+#include <chrono>
 #include <random>
 
 #include "logging/gl_error.hpp"
 
 namespace SIM {
+
+bool Colony::willDrop(const uint &closeDeadAnts) {
+  std::default_random_engine gen;
+  gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  std::uniform_real_distribution dist(0.0f, 1.0f);
+
+  // se tiver pegando muito frequentemente, multiplicar por 2
+  float formula = closeDeadAnts / ((Ant::getRadius() * 2 + 1) * (Ant::getRadius() * 2 + 1) - 1);
+  if(dist(gen) > formula)
+    return false;
+  return true;
+}
+
+bool Colony::willTake(const uint &closeDeadAnts) {
+  std::default_random_engine gen;
+  gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  std::uniform_real_distribution dist(0.0f, 1.0f);
+
+  // se tiver largando muito frequentemente, dividir por 2
+  float formula = closeDeadAnts / ((Ant::getRadius() * 2 + 1) * (Ant::getRadius() * 2 + 1) - 1);
+  if(dist(gen) < formula)
+    return false;
+  return true;
+}
 
 void Colony::iterate() {
   Pos newPos;
@@ -23,6 +48,22 @@ void Colony::iterate() {
     }
   }
   m_AliveAnts = std::move(newAnts);
+
+  for(auto &ant : m_AliveAnts)
+    if(ant != nullptr) {
+      if(this->query(ant.get()->getPos()) == GridState::BothFree) {
+        bool vaiPegar = willTake(ant.get()->lookAndCount(m_DeadAnts, m_GridM, m_GridN));
+        vaiPegar = vaiPegar;
+
+      } else if(this->query(ant.get()->getPos()) == GridState::AliveBusy) {
+        bool vaiLargar = willDrop(ant.get()->lookAndCount(m_DeadAnts, m_GridM, m_GridN));
+        vaiLargar = vaiLargar;
+      }
+    }
+}
+
+GridState Colony::query(Pos pos) {
+  return this->query(pos.x, pos.y);
 }
 
 GridState Colony::query(uint x, uint y) {
@@ -57,12 +98,11 @@ Colony::Colony(const u_short &gridM,
   /* TODO: Checar se quantidade de formiga eh maior que total de celulas */
 
   LOG(DEBUG) << "Colony Constructed (" << gridM * gridN << " cells)";
-  // LOG(DEBUG) << "m_AliveAnts.size() = " << m_AliveAnts.size();
-  // LOG(DEBUG) << "m_DeadAnts.size() = " << m_DeadAnts.size();
 
   SIM::Ant::setRadius(m_AntVisionRadius);
 
   std::default_random_engine gen;
+  gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
   std::uniform_int_distribution<uint> distM(0, gridM - 1);
   std::uniform_int_distribution<uint> distN(0, gridN - 1);
 

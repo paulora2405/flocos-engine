@@ -15,6 +15,15 @@ struct Pos {
   uint y;
 };
 
+struct DeadAnt {
+  AntState m_State;
+  Pos m_Pos;
+
+  DeadAnt(uint x, uint y) : m_State{AntState::Free}, m_Pos{x, y} {}
+  Pos getPos() { return m_Pos; }
+  AntState getState() { return m_State; }
+};
+
 class Ant {
 private:
   AntState m_State;
@@ -28,6 +37,7 @@ public:
 
   static void setRadius(u_short radius);
 
+  static u_short getRadius();
   AntState getState() const;
   Pos getPos() const;
 
@@ -36,7 +46,9 @@ public:
            const u_short &gridN);
   void drop();
   void take();
-  uint lookAndCount();
+  uint lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
+                    const u_short &gridM,
+                    const u_short &gridN);
 };
 
 }  // namespace SIM

@@ -9,15 +9,6 @@ namespace SIM {
 
 enum class GridState : u_char { Empty, DeadFree, AliveFree, AliveBusy, BothFree };
 
-struct DeadAnt {
-  AntState m_State;
-  Pos m_Pos;
-
-  DeadAnt(uint x, uint y) : m_State{AntState::Free}, m_Pos{x, y} {}
-  Pos getPos() { return m_Pos; }
-  AntState getState() { return m_State; }
-};
-
 class Colony {
 private:
   const u_short m_AliveAntsQnt;
@@ -37,6 +28,9 @@ public:
   ~Colony();
 
   void iterate();
+  bool willDrop(const uint &closeDeadAnts);
+  bool willTake(const uint &closeDeadAnts);
+  GridState query(Pos pos);
   GridState query(uint x, uint y);
 };
 
