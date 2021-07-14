@@ -23,6 +23,7 @@ private:
   uint m_AliveQnt;
   uint m_DeadQnt;
   uint m_VisionRadius;
+  uint m_Iterations;
   std::unique_ptr<float[]> m_Positions;
   size_t m_PosSize;
   std::unique_ptr<uint[]> m_Indices;

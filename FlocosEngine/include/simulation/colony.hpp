@@ -7,7 +7,14 @@
 
 namespace SIM {
 
-enum class GridState : u_char { Empty, DeadFree, AliveFree, AliveBusy, BothFree };
+enum class GridState : u_char {
+  Empty,
+  DeadFree,
+  AliveFree,
+  AliveBusy,
+  AliveBusyDeadFree,
+  BothFree,
+};
 
 class Colony {
 private:
@@ -27,6 +34,8 @@ public:
          const u_short &AntVisionRadius);
   ~Colony();
 
+  void action();
+  void movement();
   void iterate();
   bool willDrop(const uint &closeDeadAnts);
   bool willTake(const uint &closeDeadAnts);

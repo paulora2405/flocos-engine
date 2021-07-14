@@ -19,20 +19,29 @@ struct DeadAnt {
   AntState m_State;
   Pos m_Pos;
 
+  DeadAnt(Pos pos) : m_State{AntState::Free}, m_Pos{pos} {}
   DeadAnt(uint x, uint y) : m_State{AntState::Free}, m_Pos{x, y} {}
+  DeadAnt(Pos pos, AntState state) : m_State{state}, m_Pos{pos} {}
+  DeadAnt(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y} {}
   Pos getPos() { return m_Pos; }
   AntState getState() { return m_State; }
+  void setState(AntState state) { m_State = state; }
 };
 
 class Ant {
 private:
   AntState m_State;
   Pos m_Pos;
+  std::unique_ptr<DeadAnt> m_Carrying;
   static u_short s_VisionRadius;
 
 public:
+  Ant(Pos pos);
   Ant(uint x, uint y);
-  Ant(uint x, uint y, AntState);
+  Ant(Pos pos, AntState state);
+  Ant(uint x, uint y, AntState state);
+  Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying);
+  Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying);
   ~Ant();
 
   static void setRadius(u_short radius);
@@ -40,12 +49,13 @@ public:
   static u_short getRadius();
   AntState getState() const;
   Pos getPos() const;
+  std::unique_ptr<DeadAnt> transferCarrying();
 
-  Pos move(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
+  Pos walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
            const u_short &gridM,
            const u_short &gridN);
-  void drop();
-  void take();
+  std::unique_ptr<DeadAnt> drop();
+  void take(std::unique_ptr<DeadAnt> toCarry);
   uint lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
                     const u_short &gridM,
                     const u_short &gridN);

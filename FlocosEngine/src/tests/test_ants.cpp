@@ -31,7 +31,7 @@ void TestAnts::init() {
   for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
     SIM::GridState state = m_Colony.get()->query(m, n);
-    float r, g, b, a;
+    float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
 
     if(state == SIM::GridState::Empty)
       r = g = b = a = 1.0f;
@@ -96,28 +96,24 @@ void TestAnts::init() {
 //
 
 void TestAnts::updateGrid() {
-  // m_Colony = std::make_unique<SIM::Colony>(m_GridM, m_GridN, m_AliveQnt, m_DeadQnt,
-  // m_VisionRadius);
-
-  m_Colony.get()->iterate();
-
   uint n = 0, m = 0;
   for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
-    SIM::GridState state = m_Colony.get()->query(m, n);
-    // LOG(DEBUG) << "(M,N) = " << m << ',' << n << " -> " << (uint)state;
-    float r, g, b, a;
+    SIM::GridState state = m_Colony->query(m, n);
+    float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
 
     if(state == SIM::GridState::Empty)
       r = g = b = a = 1.0f;
-    else if(state == SIM::GridState::AliveFree)
-      r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
     else if(state == SIM::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::BothFree)
-      r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
+    else if(state == SIM::GridState::AliveFree)
+      r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
     else if(state == SIM::GridState::AliveBusy)
       r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
+    else if(state == SIM::GridState::AliveBusyDeadFree)
+      r = 1.0f, g = 0.4f, b = 0.0f, a = 1.0f;
+    else if(state == SIM::GridState::BothFree)
+      r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
 
     for(size_t j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = r;
@@ -138,7 +134,11 @@ void TestAnts::onUpdate(float &deltaTime) {
   deltaTime = deltaTime;
   static uint tick = 1;
   if(!m_Paused and m_Initiated) {
-    if(tick++ >= 8) {
+    if(tick++ >= 2) {
+      for(size_t i = 0; i < 10; i++) {
+        m_Colony->iterate();
+        m_Iterations++;
+      }
       updateGrid();
       tick = 1;
     }
@@ -200,9 +200,10 @@ void TestAnts::onImGuiRender() {
       if(strcmp(mSize, empty) and strcmp(nSize, empty)) {
         m_GridM = atoi(mSize);
         m_GridN = atoi(nSize);
-        m_AliveQnt = strcmp(aliveAntsQnt, empty) ? atoi(aliveAntsQnt) : (m_GridM * m_GridN) / 8;
-        m_DeadQnt = strcmp(deadAntsQnt, empty) ? atoi(deadAntsQnt) : (m_GridM * m_GridN) / 8;
-        m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 2;
+        m_AliveQnt =
+            strcmp(aliveAntsQnt, empty) ? atoi(aliveAntsQnt) : (m_GridM * m_GridN) / 64 + 1;
+        m_DeadQnt = strcmp(deadAntsQnt, empty) ? atoi(deadAntsQnt) : (m_GridM * m_GridN) / 8 + 1;
+        m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 3;
       }
       m_Initiated = true;
       // LOG(DEBUG) << "Colony Param: " << m_GridM << ',' << m_GridN << ',' << m_AliveQnt << ','
@@ -212,6 +213,15 @@ void TestAnts::onImGuiRender() {
     // ImGui::TextDisabled("If either input is left empty,\n the default grid will be
     // initialized.");
   } else {
+    ImGui::Text(std::string("Running " + std::to_string(m_GridM) + 'x' + std::to_string(m_GridN) +
+                            " Grid...")
+                    .c_str());
+    if(ImGui::IsItemHovered())
+      ImGui::SetTooltip(std::string("Alive Ants: " + std::to_string(m_AliveQnt) +
+                                    "\nDead Ants: " + std::to_string(m_DeadQnt) +
+                                    "\nVision Radius: " + std::to_string(m_VisionRadius) +
+                                    "\nIterations: " + std::to_string(m_Iterations))
+                            .c_str());
     static std::string pauseText{"Start"};
     if(ImGui::Button(pauseText.c_str())) {
       m_Paused = !m_Paused;
@@ -221,8 +231,17 @@ void TestAnts::onImGuiRender() {
         pauseText = "Pause";
     }
     if(m_Paused)
-      if(ImGui::Button("Update One Tick"))
+      if(ImGui::Button("Update One Tick")) {
+        m_Colony->iterate();
+        m_Iterations++;
         this->updateGrid();
+      }
+    if(ImGui::Button("FastForward 10000 Iterations")) {
+      for(size_t i = 0; i < 10000; i++) {
+        m_Colony->iterate();
+        m_Iterations++;
+      }
+    }
   }
 }
 
@@ -233,9 +252,10 @@ TestAnts::TestAnts()
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
       m_GridM{200},
       m_GridN{200},
-      m_AliveQnt{5000},
-      m_DeadQnt{5000},
-      m_VisionRadius{2},
+      m_AliveQnt{(m_GridM * m_GridN) / (uint)64 + 1},
+      m_DeadQnt{(m_GridM * m_GridN) / (uint)8 + 1},
+      m_VisionRadius{3},
+      m_Iterations{0},
       m_Positions{},
       m_PosSize{0},
       m_Indices{},
