@@ -32,9 +32,8 @@ bool Colony::willDrop(const uint &closeDeadAnts) {
       std::chrono::system_clock::now().time_since_epoch().count());
   static std::uniform_real_distribution dist(0.0f, 1.0f);
 
-  // se tiver carregando, chance de dropar é 0
-  float density = closeDeadAnts /
-                  static_cast<float>((Ant::getRadius() * 2 + 1) * (Ant::getRadius() * 2 + 1) - 1);
+  const float radius = static_cast<float>(Ant::getRadius());
+  float density = closeDeadAnts / ((radius * 2 + 1) * (radius * 2 + 1) - 1);
   density *= density * density;
 
   if(dist(gen) < density)
@@ -47,9 +46,8 @@ bool Colony::willTake(const uint &closeDeadAnts) {
       std::chrono::system_clock::now().time_since_epoch().count());
   static std::uniform_real_distribution dist(0.0f, 1.0f);
 
-  float density = closeDeadAnts /
-                  static_cast<float>((Ant::getRadius() * 2 + 1) * (Ant::getRadius() * 2 + 1) - 1);
-  // density *= density * density;
+  const float radius = static_cast<float>(Ant::getRadius());
+  float density = closeDeadAnts / ((radius * 2 + 1) * (radius * 2 + 1) - 1);
 
   if(dist(gen) > density)
     return true;
