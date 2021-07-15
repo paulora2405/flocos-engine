@@ -19,6 +19,7 @@
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
+#include "vendor/stbi/stb_image.hpp"
 
 /* Easylogging++ initialization */
 INITIALIZE_EASYLOGGINGPP
@@ -113,6 +114,11 @@ void GraphicsEngine::init() {
 
   /* Make the window's context current */
   glfwMakeContextCurrent(m_window);
+
+  GLFWimage icon[1];
+  icon[0].pixels = stbi_load("res/textures/dog2.png", &icon[0].width, &icon[0].height, 0, 4);
+  glfwSetWindowIcon(this->m_window, 1, icon);
+  stbi_image_free(icon[0].pixels);
 
   /* Window's properties */
   // glfwSetWindowAspectRatio(m_window, m_width, m_height);
