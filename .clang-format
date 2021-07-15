@@ -1,1 +1,15 @@
-/home/paulo/.clang-format
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 100
+SpaceBeforeParens: Never
+AccessModifierOffset: -2
+AlignAfterOpenBracket: Align
+AllowAllConstructorInitializersOnNextLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortEnumsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BinPackParameters: false
+IndentPPDirectives: BeforeHash
+BraceWrapping:
+  AfterEnum: false
