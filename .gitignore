@@ -1,8 +1,6 @@
 # Custom
 .vscode/
 build/
-backup/
-.clang-format
 *.log
 
 # Prerequisites
