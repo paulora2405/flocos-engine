@@ -2,8 +2,9 @@
 #define COLONY_HPP
 
 #include <memory>
-#include <simulation/ant.hpp>
 #include <vector>
+
+#include "simulation/ant.hpp"
 
 namespace SIM {
 
@@ -18,11 +19,11 @@ enum class GridState : u_char {
 
 class Colony {
 private:
-  const u_short m_AliveAntsQnt;
-  const u_short m_DeadAntsQnt;
+  const u_short m_QntAliveAnts;
+  const u_short m_QntDeadAnts;
   const u_short m_AntVisionRadius;
-  u_short m_GridM;
-  u_short m_GridN;
+  const u_short m_GridM;
+  const u_short m_GridN;
   std::vector<std::unique_ptr<SIM::Ant>> m_AliveAnts;
   std::vector<std::unique_ptr<SIM::DeadAnt>> m_DeadAnts;
 

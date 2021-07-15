@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include "vendor/glm/glm.hpp"
-
 namespace SIM {
 
 enum class AntState : u_char { Free, Busy };
@@ -44,21 +42,21 @@ public:
   Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying);
   ~Ant();
 
-  static void setRadius(u_short radius);
+  std::unique_ptr<DeadAnt> drop();
+  void take(std::unique_ptr<DeadAnt> toCarry);
+  Pos walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
+           const u_short &gridM,
+           const u_short &gridN);
+  uint lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
+                    const u_short &gridM,
+                    const u_short &gridN);
 
-  static u_short getRadius();
   AntState getState() const;
   Pos getPos() const;
   std::unique_ptr<DeadAnt> transferCarrying();
 
-  Pos walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
-           const u_short &gridM,
-           const u_short &gridN);
-  std::unique_ptr<DeadAnt> drop();
-  void take(std::unique_ptr<DeadAnt> toCarry);
-  uint lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
-                    const u_short &gridM,
-                    const u_short &gridN);
+  static void setRadius(u_short radius);
+  static u_short getRadius();
 };
 
 }  // namespace SIM
