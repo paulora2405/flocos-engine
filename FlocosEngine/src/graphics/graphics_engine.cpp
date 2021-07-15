@@ -162,7 +162,9 @@ GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
 GraphicsEngine::GraphicsEngine(const unsigned short& width, const unsigned short& height)
     : m_width{width},
       m_height{height} {
-  std::filesystem::current_path("/home/paulo/git/flocos-engine/");
+  // LOG(DEBUG) << std::filesystem::current_path();
+  std::filesystem::current_path("../../..");
+  // std::filesystem::current_path("/home/paulo/git/flocos-engine/");
 
   /* Logger configuration */
   int argc = 0;

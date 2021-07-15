@@ -8,30 +8,13 @@ namespace SIM {
 
 u_short Ant::s_VisionRadius = 0;
 
-Ant::Ant(Pos pos) : m_State{SIM::AntState::Free}, m_Pos{pos}, m_Carrying{} {}
-Ant::Ant(uint x, uint y) : m_State{SIM::AntState::Free}, m_Pos{x, y}, m_Carrying{} {}
-Ant::Ant(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
-Ant::Ant(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y}, m_Carrying{} {}
-Ant::Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying)
-    : m_State{state},
-      m_Pos{pos},
-      m_Carrying{std::move(carrying)} {}
-Ant::Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying)
-    : m_State{state},
-      m_Pos{x, y},
-      m_Carrying{std::move(carrying)} {}
-Ant::~Ant() {}
-
 Pos Ant::walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
               const u_short &gridM,
               const u_short &gridN) {
   static std::default_random_engine gen;
   static std::uniform_int_distribution<uint> directionChoice(1, 8);
-  uint direction = directionChoice(gen);
+  const uint direction = directionChoice(gen);
   Pos newPos = m_Pos;
-
-  if(direction == 0)
-    return m_Pos;
 
   if(direction == 1)  // UP
     newPos.y = (m_Pos.y + 1) % gridN;
@@ -58,11 +41,8 @@ Pos Ant::walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
     newPos = {(m_Pos.x > 0) * (m_Pos.x - 1) + (m_Pos.x == 0) * (gridM - 1),
               (m_Pos.y > 0) * (m_Pos.y - 1) + (m_Pos.y == 0) * (gridN - 1)};
 
-  if(ants[newPos.x * gridM + newPos.y] != nullptr)
+  if(ants[newPos.x * gridM + newPos.y])
     return m_Pos;
-
-  // if(m_State == AntState::Busy and deadAnts[newPos.x * gridM + newPos.y] != nullptr)
-  //   return m_Pos;
 
   return newPos;
 }
@@ -73,7 +53,7 @@ std::unique_ptr<DeadAnt> Ant::drop() {
   return std::move(m_Carrying);
 }
 
-void Ant::take(std::unique_ptr<DeadAnt> toCarry) {
+void Ant::take(std::unique_ptr<DeadAnt> &&toCarry) {
   m_State = AntState::Busy;
   toCarry->setState(AntState::Busy);
   m_Carrying = std::move(toCarry);
@@ -91,28 +71,25 @@ uint Ant::lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
         continue;
 
       if(i == 0) {
-        if((x + i) < gridM and (y >= j) and deadAnts[(x + i) * gridM + (y - j)] != nullptr)
+        if((y >= j) and deadAnts[(x)*gridM + (y - j)])
           closeDeadAnt++;
-        if((x >= i) and (y + j) < gridN and deadAnts[(x - i) * gridM + (y + j)] != nullptr)
+        if((y + j) < gridN and deadAnts[(x)*gridM + (y + j)])
           closeDeadAnt++;
 
       } else if(j == 0) {
-        if((x + i) < gridM and (y + j) < gridN and deadAnts[(x + i) * gridM + (y + j)] != nullptr)
+        if((x + i) < gridM and deadAnts[(x + i) * gridM + (y)])
           closeDeadAnt++;
-        if((x >= i) and (y >= j) and deadAnts[(x - i) * gridM + (y - j)] != nullptr)
+        if((x >= i) and deadAnts[(x - i) * gridM + (y)])
           closeDeadAnt++;
 
       } else {
-        if((x + i) < gridM and (y + j) < gridN and deadAnts[(x + i) * gridM + (y + j)] != nullptr)
+        if((x + i) < gridM and (y + j) < gridN and deadAnts[(x + i) * gridM + (y + j)])
           closeDeadAnt++;
-
-        if((x + i) < gridM and (y >= j) and deadAnts[(x + i) * gridM + (y - j)] != nullptr)
+        if((x + i) < gridM and (y >= j) and deadAnts[(x + i) * gridM + (y - j)])
           closeDeadAnt++;
-
-        if((x >= i) and (y >= j) and deadAnts[(x - i) * gridM + (y - j)] != nullptr)
+        if((x >= i) and (y >= j) and deadAnts[(x - i) * gridM + (y - j)])
           closeDeadAnt++;
-
-        if((x >= i) and (y + j) < gridN and deadAnts[(x - i) * gridM + (y + j)] != nullptr)
+        if((x >= i) and (y + j) < gridN and deadAnts[(x - i) * gridM + (y + j)])
           closeDeadAnt++;
       }
     }
@@ -140,5 +117,19 @@ u_short Ant::getRadius() {
 void Ant::setRadius(u_short radius) {
   Ant::s_VisionRadius = radius;
 }
+
+Ant::Ant(Pos pos) : m_State{SIM::AntState::Free}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y) : m_State{SIM::AntState::Free}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying)
+    : m_State{state},
+      m_Pos{pos},
+      m_Carrying{std::move(carrying)} {}
+Ant::Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying)
+    : m_State{state},
+      m_Pos{x, y},
+      m_Carrying{std::move(carrying)} {}
+Ant::~Ant() {}
 
 }  // namespace SIM

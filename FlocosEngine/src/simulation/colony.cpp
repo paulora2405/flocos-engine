@@ -57,7 +57,7 @@ void Colony::action() {
   /* State Change: dropping and taking */
   for(auto &ant : m_AliveAnts) {
     /* If an alive ant is in this position */
-    if(ant != nullptr) {
+    if(ant) {
       /* If there is a free alive ant and a free dead ant */
       if(this->query(ant->getPos()) == GridState::BothFree) {
         /* If the alive ants decides to take dead ant */
@@ -86,11 +86,11 @@ void Colony::movement() {
   uint i = 0, j = 0;
   for(auto &ant : m_AliveAnts) {
     /* If an alive ant is in this position */
-    if(ant != nullptr) {
+    if(ant) {
       newPos = ant->walk(m_AliveAnts, m_GridM, m_GridN);
 
       /* If there isn's an alive ant already going to new position */
-      if(newAnts[newPos.x * m_GridM + newPos.y] == nullptr) {
+      if(!newAnts[newPos.x * m_GridM + newPos.y]) {
         newAnts[newPos.x * m_GridM + newPos.y] =
             std::make_unique<Ant>(newPos, ant->getState(), ant->transferCarrying());
 
@@ -101,7 +101,7 @@ void Colony::movement() {
       }
     }
     /* If there is a dead ant in this position, it stays there */
-    if(m_DeadAnts[i * m_GridM + j] != nullptr)
+    if(m_DeadAnts[i * m_GridM + j])
       newDeadAnts[i * m_GridM + j] = std::make_unique<DeadAnt>(i, j);
 
     if(++j >= m_GridN)
@@ -123,11 +123,11 @@ GridState Colony::query(Pos pos) {
 }
 
 GridState Colony::query(uint x, uint y) {
-  if(m_AliveAnts[x * m_GridM + y] == nullptr and m_DeadAnts[x * m_GridM + y] == nullptr)
+  if(!m_AliveAnts[x * m_GridM + y] and !m_DeadAnts[x * m_GridM + y])
     return GridState::Empty;
 
-  if(m_AliveAnts[x * m_GridM + y] != nullptr) {
-    if(m_DeadAnts[x * m_GridM + y] != nullptr) {
+  if(m_AliveAnts[x * m_GridM + y]) {
+    if(m_DeadAnts[x * m_GridM + y]) {
       if(m_AliveAnts[x * m_GridM + y]->getState() == AntState::Busy)
         return GridState::AliveBusyDeadFree;
       return GridState::BothFree;
@@ -164,7 +164,7 @@ Colony::Colony(const u_short &gridM,
     uint i, j;
     do {
       i = distM(gen), j = distN(gen);
-    } while(m_AliveAnts[i * m_GridM + j] != nullptr);
+    } while(m_AliveAnts[i * m_GridM + j]);
     m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM::Ant>(i, j);
   }
 
@@ -172,7 +172,7 @@ Colony::Colony(const u_short &gridM,
     uint i, j;
     do {
       i = distM(gen), j = distN(gen);
-    } while(m_DeadAnts[i * m_GridM + j] != nullptr);
+    } while(m_DeadAnts[i * m_GridM + j]);
     m_DeadAnts[i * m_GridM + j] = std::make_unique<SIM::DeadAnt>(i, j);
   }
 }
