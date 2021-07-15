@@ -13,7 +13,8 @@ void Gui::newFrame() {
 }
 
 void Gui::draw() {
-  if(m_ShowDemoWindow) ImGui::ShowDemoWindow(&m_ShowDemoWindow);
+  if(m_ShowDemoWindow)
+    ImGui::ShowDemoWindow(&m_ShowDemoWindow);
 
   this->drawFps();
 
@@ -21,9 +22,7 @@ void Gui::draw() {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Gui::drawSliders(const std::string& label,
-                      const glm::vec3& t,
-                      glm::vec2 screen) const {
+void Gui::drawSliders(const std::string& label, const glm::vec3& t, glm::vec2 screen) const {
   ImGui::Begin(label.c_str());
 
   ImGui::SliderFloat("X", (float*)&t.x, 0.0f, (float)screen.x);
@@ -46,13 +45,11 @@ void Gui::drawFps() const {
   const float fps = ImGui::GetIO().Framerate;
 
   ImGui::Begin("FPS Shadow", nullptr, window_flags);
-  ImGui::TextColored({0.0f, 0.0f, 0.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
-                     1000.0f / fps);
+  ImGui::TextColored({0.0f, 0.0f, 0.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps, 1000.0f / fps);
   ImGui::End();
 
   ImGui::Begin("FPS", nullptr, window_flags);
-  ImGui::TextColored({1.0f, 1.0f, 1.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps,
-                     1000.0f / fps);
+  ImGui::TextColored({1.0f, 1.0f, 1.0f, 1.0f}, "%.1f FPS (%.3f ms/frame)", fps, 1000.0f / fps);
   ImGui::End();
 }
 
@@ -62,6 +59,8 @@ Gui::Gui(GLFWwindow* window, bool drawDemo) : m_ShowDemoWindow{drawDemo} {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui::StyleColorsDark();
   ImGui_ImplOpenGL3_Init((char*)glGetString(330));
+  ImGuiIO& io = ImGui::GetIO();
+  io.Fonts->AddFontFromFileTTF("res/fonts/UbuntuMono-R.ttf", 16);
 }
 
 Gui::~Gui() {
