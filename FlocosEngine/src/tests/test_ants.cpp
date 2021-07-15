@@ -35,13 +35,13 @@ void TestAnts::init() {
 
     if(state == SIM::GridState::Empty)
       r = g = b = a = 1.0f;
-    if(state == SIM::GridState::AliveFree)
-      r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::DeadFree)
+    else if(state == SIM::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::BothFree)
+    else if(state == SIM::GridState::AliveFree)
+      r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
+    else if(state == SIM::GridState::BothFree)
       r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    if(state == SIM::GridState::AliveBusy)
+    else if(state == SIM::GridState::AliveBusy)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
     for(size_t j = 0; j < 4; j++) {
@@ -106,14 +106,20 @@ void TestAnts::updateGrid() {
       r = g = b = a = 1.0f;
     else if(state == SIM::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::AliveFree)
-      r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::AliveBusy)
-      r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::AliveBusyDeadFree)
-      r = 1.0f, g = 0.4f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::BothFree)
-      r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
+    else if(!m_HideAlive) {
+      if(state == SIM::GridState::AliveFree)
+        r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
+      if(state == SIM::GridState::AliveBusy)
+        r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
+      if(state == SIM::GridState::AliveBusyDeadFree)
+        r = 1.0f, g = 0.4f, b = 0.0f, a = 1.0f;
+      if(state == SIM::GridState::BothFree)
+        r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
+    } else if(state == SIM::GridState::AliveBusy or state == SIM::GridState::AliveBusyDeadFree or
+              state == SIM::GridState::BothFree)
+      r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
+    else
+      r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
 
     for(size_t j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = r;
@@ -148,14 +154,10 @@ void TestAnts::onUpdate(float &deltaTime) {
 //
 
 void TestAnts::onRender() {
-  // GLCALL(glClearColor(0.67f, 0.85f, 0.89f, 1.0f));
-  // GLCALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-  // GLCALL(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
   GLCALL(glClearColor(0.85f, 0.96f, 0.65f, 1.0f));
   GLCALL(glClear(GL_COLOR_BUFFER_BIT));
   if(m_Initiated) {
     GE::Renderer re;
-    // m_Texture1->bind();
 
     glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), {0, 0, 0});
     /* P * V * M because opengl uses coloum-major matrices */
@@ -173,7 +175,7 @@ void TestAnts::onImGuiRender() {
   if(!m_Initiated) {
     ImGui::Text("Enter the size MxN of the Grid:");
     if(ImGui::IsItemHovered())
-      ImGui::SetTooltip("If either input is left empty, the default grid will be initialized.");
+      ImGui::SetTooltip("If either input is left empty,\nthe default grid will be initialized.");
     static char mSize[5] = "";
     static char nSize[5] = "";
     static char aliveAntsQnt[5] = "";
@@ -206,12 +208,9 @@ void TestAnts::onImGuiRender() {
         m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 3;
       }
       m_Initiated = true;
-      // LOG(DEBUG) << "Colony Param: " << m_GridM << ',' << m_GridN << ',' << m_AliveQnt << ','
-      //            << m_DeadQnt << ',' << m_VisionRadius;
       this->init();
     }
-    // ImGui::TextDisabled("If either input is left empty,\n the default grid will be
-    // initialized.");
+
   } else {
     ImGui::Text(std::string("Running " + std::to_string(m_GridM) + 'x' + std::to_string(m_GridN) +
                             " Grid...")
@@ -222,6 +221,7 @@ void TestAnts::onImGuiRender() {
                                     "\nVision Radius: " + std::to_string(m_VisionRadius) +
                                     "\nIterations: " + std::to_string(m_Iterations))
                             .c_str());
+
     static std::string pauseText{"Start"};
     if(ImGui::Button(pauseText.c_str())) {
       m_Paused = !m_Paused;
@@ -230,6 +230,8 @@ void TestAnts::onImGuiRender() {
       else
         pauseText = "Pause";
     }
+    if(ImGui::Button("Hide/Show AliveAnts"))
+      m_HideAlive = !m_HideAlive;
     if(m_Paused)
       if(ImGui::Button("Update One Tick")) {
         m_Colony->iterate();
@@ -262,6 +264,7 @@ TestAnts::TestAnts()
       m_IndSize{0},
       m_Initiated{false},
       m_Paused{true},
+      m_HideAlive{false},
       m_ProjMatrix{glm::ortho(0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
       m_ViewMatrix{glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))},
       m_Colony{} {

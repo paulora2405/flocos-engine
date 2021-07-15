@@ -30,6 +30,7 @@ private:
   size_t m_IndSize;
   bool m_Initiated;
   bool m_Paused;
+  bool m_HideAlive;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
   std::unique_ptr<SIM::Colony> m_Colony;
