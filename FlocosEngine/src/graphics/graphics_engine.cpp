@@ -31,15 +31,15 @@ void GraphicsEngine::mainLoop() {
 
   Gui gui{this->m_window, false};
 
-  tests::Test* currentTest = nullptr;
-  tests::TestMenu* testMenu = new tests::TestMenu{currentTest};
+  TEST::Test* currentTest = nullptr;
+  TEST::TestMenu* testMenu = new TEST::TestMenu{currentTest};
   currentTest = testMenu;
 
-  testMenu->registerTest<tests::TestClearColor>("TestClearColor");
-  testMenu->registerTest<tests::TestTexture2D>("TestTexture2D");
-  testMenu->registerTest<tests::TestGrid>("TestGrid");
-  testMenu->registerTest<tests::TestBatchRender>("TestBatchRender");
-  testMenu->registerTest<tests::TestAnts>("Ants Simulation");
+  testMenu->registerTest<TEST::TestClearColor>("TestClearColor");
+  testMenu->registerTest<TEST::TestTexture2D>("TestTexture2D");
+  testMenu->registerTest<TEST::TestGrid>("TestGrid");
+  testMenu->registerTest<TEST::TestBatchRender>("TestBatchRender");
+  testMenu->registerTest<TEST::TestAnts>("Ants Simulation");
   float timeDelta = 0.0f;
 
   while(!glfwWindowShouldClose(this->m_window)) {

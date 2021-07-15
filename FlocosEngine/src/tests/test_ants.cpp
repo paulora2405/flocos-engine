@@ -8,7 +8,7 @@
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
 
-namespace tests {
+namespace TEST {
 
 void TestAnts::init() {
   LOG(INFO) << "Initializing Ants Simulation Test";
@@ -275,4 +275,4 @@ TestAnts::TestAnts()
 
 TestAnts::~TestAnts() {}
 
-}  // namespace tests
+}  // namespace TEST

@@ -3,7 +3,7 @@
 #include "logging/gl_error.hpp"
 #include "vendor/imgui/imgui.h"
 
-namespace tests {
+namespace TEST {
 
 TestClearColor::TestClearColor() : m_ClearColor{0.5f, 0.2f, 0.8f, 1.0f} {
   LOG(DEBUG) << "Creating Clear Color Test";
@@ -24,4 +24,4 @@ void TestClearColor::onImGuiRender() {
   ImGui::ColorEdit4("Clear Color", &m_ClearColor[0]);
 }
 
-}  // namespace tests
+}  // namespace TEST

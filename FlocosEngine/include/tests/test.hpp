@@ -6,7 +6,7 @@
 
 #include "logging/gl_error.hpp"
 
-namespace tests {
+namespace TEST {
 
 class Test {
 public:
@@ -36,6 +36,6 @@ public:
   }
 };
 
-}  // namespace tests
+}  // namespace TEST
 
 #endif

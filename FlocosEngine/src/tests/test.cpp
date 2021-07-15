@@ -2,10 +2,9 @@
 
 #include "vendor/imgui/imgui.h"
 
-namespace tests {
+namespace TEST {
 
-TestMenu::TestMenu(Test*& currentTestPointer)
-    : m_CurrentTest{currentTestPointer} {}
+TestMenu::TestMenu(Test*& currentTestPointer) : m_CurrentTest{currentTestPointer} {}
 
 void TestMenu::onImGuiRender() {
   for(auto& test : m_Tests) {
@@ -15,4 +14,4 @@ void TestMenu::onImGuiRender() {
   }
 }
 
-}  // namespace tests
+}  // namespace TEST

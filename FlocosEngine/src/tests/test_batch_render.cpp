@@ -10,7 +10,7 @@
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
 
-namespace tests {
+namespace TEST {
 
 void TestBatchRender::init() {
   LOG(DEBUG) << "Initiated BatchRender";
@@ -58,7 +58,8 @@ void TestBatchRender::init() {
       offX += cellOffset;
       offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
       n = 0;
-      if(!(m_GridN & 1)) inverted = !inverted;
+      if(!(m_GridN & 1))
+        inverted = !inverted;
     } else {
       offY += cellOffset;
     }
@@ -179,4 +180,4 @@ TestBatchRender::TestBatchRender()
 
 TestBatchRender::~TestBatchRender() {}
 
-}  // namespace tests
+}  // namespace TEST

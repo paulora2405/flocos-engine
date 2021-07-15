@@ -11,7 +11,7 @@
 #include "tests/test.hpp"
 #include "vendor/glm/glm.hpp"
 
-namespace tests {
+namespace TEST {
 
 class TestTexture2D : public Test {
 private:
@@ -36,6 +36,6 @@ public:
   void onImGuiRender() override;
 };
 
-}  // namespace tests
+}  // namespace TEST
 
 #endif

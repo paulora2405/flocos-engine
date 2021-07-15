@@ -7,7 +7,7 @@
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/imgui/imgui.h"
 
-namespace tests {
+namespace TEST {
 
 TestTexture2D::TestTexture2D()
     : m_WinWidth{GE::GraphicsEngine::getInstance().getWindowWidth()},
@@ -89,4 +89,4 @@ void TestTexture2D::onImGuiRender() {
   ImGui::SliderFloat("Y2", (float *)&m_Translation2.y, 0.0f, (float)m_WinHeight);
 }
 
-}  // namespace tests
+}  // namespace TEST
