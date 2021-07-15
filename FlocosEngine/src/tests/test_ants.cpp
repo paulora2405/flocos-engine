@@ -134,14 +134,14 @@ void TestAnts::onUpdate(float &deltaTime) {
   deltaTime = deltaTime;
   static uint tick = 1;
   if(!m_Paused and m_Initiated) {
-    if(tick++ >= 2) {
+    if(tick++ >= 8) {
       for(size_t i = 0; i < 10; i++) {
-        m_Colony->iterate();
-        m_Iterations++;
       }
       updateGrid();
       tick = 1;
     }
+    m_Colony->iterate();
+    m_Iterations++;
   }
 }
 
