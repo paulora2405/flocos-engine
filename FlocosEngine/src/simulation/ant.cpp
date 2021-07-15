@@ -8,20 +8,6 @@ namespace SIM {
 
 u_short Ant::s_VisionRadius = 0;
 
-Ant::Ant(Pos pos) : m_State{SIM::AntState::Free}, m_Pos{pos}, m_Carrying{} {}
-Ant::Ant(uint x, uint y) : m_State{SIM::AntState::Free}, m_Pos{x, y}, m_Carrying{} {}
-Ant::Ant(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
-Ant::Ant(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y}, m_Carrying{} {}
-Ant::Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying)
-    : m_State{state},
-      m_Pos{pos},
-      m_Carrying{std::move(carrying)} {}
-Ant::Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying)
-    : m_State{state},
-      m_Pos{x, y},
-      m_Carrying{std::move(carrying)} {}
-Ant::~Ant() {}
-
 Pos Ant::walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
               const u_short &gridM,
               const u_short &gridN) {
@@ -67,7 +53,7 @@ std::unique_ptr<DeadAnt> Ant::drop() {
   return std::move(m_Carrying);
 }
 
-void Ant::take(std::unique_ptr<DeadAnt> toCarry) {
+void Ant::take(std::unique_ptr<DeadAnt> &&toCarry) {
   m_State = AntState::Busy;
   toCarry->setState(AntState::Busy);
   m_Carrying = std::move(toCarry);
@@ -131,5 +117,19 @@ u_short Ant::getRadius() {
 void Ant::setRadius(u_short radius) {
   Ant::s_VisionRadius = radius;
 }
+
+Ant::Ant(Pos pos) : m_State{SIM::AntState::Free}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y) : m_State{SIM::AntState::Free}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying)
+    : m_State{state},
+      m_Pos{pos},
+      m_Carrying{std::move(carrying)} {}
+Ant::Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying)
+    : m_State{state},
+      m_Pos{x, y},
+      m_Carrying{std::move(carrying)} {}
+Ant::~Ant() {}
 
 }  // namespace SIM

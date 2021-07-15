@@ -43,7 +43,7 @@ public:
   ~Ant();
 
   std::unique_ptr<DeadAnt> drop();
-  void take(std::unique_ptr<DeadAnt> toCarry);
+  void take(std::unique_ptr<DeadAnt> &&toCarry);
   Pos walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
            const u_short &gridM,
            const u_short &gridN);
