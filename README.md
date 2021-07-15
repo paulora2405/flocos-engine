@@ -25,6 +25,6 @@ To execute the included SandBox app, do:
 
 In order to build, compile and execute the project you need:
 - `CMake >= 3.3`
-- `gcc >= 5`
+- `C++17 compiler`
 - `GLEW`
 - `glfw`
