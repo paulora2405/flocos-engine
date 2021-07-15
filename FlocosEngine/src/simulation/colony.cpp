@@ -80,8 +80,8 @@ void Colony::action() {
 
 void Colony::movement() {
   /* Movement */
-  std::vector<std::unique_ptr<Ant>> newAnts{static_cast<size_t>(m_GridM * m_GridN)};
-  std::vector<std::unique_ptr<DeadAnt>> newDeadAnts{static_cast<size_t>(m_GridM * m_GridN)};
+  std::vector<std::unique_ptr<Ant>> newAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
+  std::vector<std::unique_ptr<DeadAnt>> newDeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
   Pos newPos;
   uint i = 0, j = 0;
   for(auto &ant : m_AliveAnts) {
@@ -149,8 +149,8 @@ Colony::Colony(const u_short &gridM,
       m_AntVisionRadius{AntVisionRadius},
       m_GridM{gridM},
       m_GridN{gridN},
-      m_AliveAnts{(size_t)(m_GridM * m_GridN)},
-      m_DeadAnts{(size_t)(m_GridM * m_GridN)} {
+      m_AliveAnts{static_cast<std::size_t>(m_GridM * m_GridN)},
+      m_DeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)} {
   LOG(DEBUG) << "Colony Constructed (" << gridM * gridN << " cells)";
 
   SIM::Ant::setRadius(m_AntVisionRadius);
@@ -160,7 +160,7 @@ Colony::Colony(const u_short &gridM,
   std::uniform_int_distribution<uint> distM(0, gridM - 1);
   std::uniform_int_distribution<uint> distN(0, gridN - 1);
 
-  for(size_t k = 0; k < m_QntAliveAnts; k++) {
+  for(uint k = 0; k < m_QntAliveAnts; k++) {
     uint i, j;
     do {
       i = distM(gen), j = distN(gen);
@@ -168,7 +168,7 @@ Colony::Colony(const u_short &gridM,
     m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM::Ant>(i, j);
   }
 
-  for(size_t k = 0; k < m_QntDeadAnts; k++) {
+  for(uint k = 0; k < m_QntDeadAnts; k++) {
     uint i, j;
     do {
       i = distM(gen), j = distN(gen);

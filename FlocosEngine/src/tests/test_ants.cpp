@@ -18,7 +18,7 @@ void TestAnts::init() {
   float cellOffset = (m_WinWidth <= m_WinHeight) * ((float)m_WinWidth / (float)m_GridM) +
                      (m_WinHeight < m_WinWidth) * ((float)m_WinHeight / (float)m_GridN);
 
-  size_t cellsTotal = m_GridM * m_GridN;
+  uint cellsTotal = m_GridM * m_GridN;
   m_PosSize = cellsTotal * 4 * 6;
   m_IndSize = cellsTotal * 6;
 
@@ -28,7 +28,7 @@ void TestAnts::init() {
   m_Indices = std::make_unique<uint[]>(m_IndSize);
 
   uint n = 0, m = 0;
-  for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
+  for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
     SIM::GridState state = m_Colony.get()->query(m, n);
     float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
@@ -44,7 +44,7 @@ void TestAnts::init() {
     else if(state == SIM::GridState::AliveBusy)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
-    for(size_t j = 0; j < 4; j++) {
+    for(u_char j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = r;
       m_Positions[i + 3 + j * 6] = g;
       m_Positions[i + 4 + j * 6] = b;
@@ -72,7 +72,7 @@ void TestAnts::init() {
   }
 
   uint indStep = 0;
-  for(size_t i = 0; i < m_IndSize; i += 6) {
+  for(uint i = 0; i < m_IndSize; i += 6) {
     m_Indices[i + 0] = 0 + indStep;
     m_Indices[i + 1] = 1 + indStep;
     m_Indices[i + 2] = 2 + indStep;
@@ -97,7 +97,7 @@ void TestAnts::init() {
 
 void TestAnts::updateGrid() {
   uint n = 0, m = 0;
-  for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
+  for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
     SIM::GridState state = m_Colony->query(m, n);
     float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
@@ -121,7 +121,7 @@ void TestAnts::updateGrid() {
     else
       r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
 
-    for(size_t j = 0; j < 4; j++) {
+    for(u_char j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = r;
       m_Positions[i + 3 + j * 6] = g;
       m_Positions[i + 4 + j * 6] = b;
@@ -141,7 +141,7 @@ void TestAnts::onUpdate(float &deltaTime) {
   static uint tick = 1;
   if(!m_Paused and m_Initiated) {
     if(tick++ >= 8) {
-      for(size_t i = 0; i < 10; i++) {
+      for(uint i = 0; i < 10; i++) {
       }
       updateGrid();
       tick = 1;
@@ -239,7 +239,7 @@ void TestAnts::onImGuiRender() {
         this->updateGrid();
       }
     if(ImGui::Button("FastForward 10000 Iterations")) {
-      for(size_t i = 0; i < 10000; i++) {
+      for(uint i = 0; i < 10000; i++) {
         m_Colony->iterate();
         m_Iterations++;
       }

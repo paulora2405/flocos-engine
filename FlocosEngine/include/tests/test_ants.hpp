@@ -25,9 +25,9 @@ private:
   uint m_VisionRadius;
   uint m_Iterations;
   std::unique_ptr<float[]> m_Positions;
-  size_t m_PosSize;
+  uint m_PosSize;
   std::unique_ptr<uint[]> m_Indices;
-  size_t m_IndSize;
+  uint m_IndSize;
   bool m_Initiated;
   bool m_Paused;
   bool m_HideAlive;

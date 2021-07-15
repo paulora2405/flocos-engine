@@ -19,7 +19,7 @@ void TestBatchRender::init() {
   float cellOffset = (m_WinWidth <= m_WinHeight) * ((float)m_WinWidth / (float)m_GridM) +
                      (m_WinHeight < m_WinWidth) * ((float)m_WinHeight / (float)m_GridN);
 
-  size_t cellsTotal = m_GridM * m_GridN;
+  uint cellsTotal = m_GridM * m_GridN;
   m_PosSize = cellsTotal * 4 * 6;
   m_IndSize = cellsTotal * 6;
 
@@ -34,9 +34,9 @@ void TestBatchRender::init() {
 
   bool inverted = false;
   uint n = 0;
-  for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
+  for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
-    for(size_t j = 0; j < 4; j++) {
+    for(uint j = 0; j < 4; j++) {
       m_Positions[i + 2 + j * 6] = inverted ? 0.2f : 0.78f;
       m_Positions[i + 3 + j * 6] = inverted ? 0.85f : 0.0f;
       m_Positions[i + 4 + j * 6] = inverted ? 1.0f : 0.22f;
@@ -66,7 +66,7 @@ void TestBatchRender::init() {
   }
 
   uint indStep = 0;
-  for(size_t i = 0; i < m_IndSize; i += 6) {
+  for(uint i = 0; i < m_IndSize; i += 6) {
     m_Indices[i + 0] = 0 + indStep;
     m_Indices[i + 1] = 1 + indStep;
     m_Indices[i + 2] = 2 + indStep;
@@ -91,11 +91,11 @@ void TestBatchRender::changePosArray() {
   static std::default_random_engine generator;
   static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
-  for(size_t i = 0; i < m_PosSize; i += 4 * 6) {
+  for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
     float r = dist(generator);  //, g = dist(generator), b = dist(generator), a = dist(generator);
     bool white = (r > 0.1f);
-    for(size_t j = 0; j < 4; j++) {
+    for(uint j = 0; j < 4; j++) {
       // m_Positions[i + 2 + j * 6] = r;
       // m_Positions[i + 3 + j * 6] = g;
       // m_Positions[i + 4 + j * 6] = b;

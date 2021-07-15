@@ -65,8 +65,8 @@ uint Ant::lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
   uint x = m_Pos.x;
   uint y = m_Pos.y;
   uint closeDeadAnt = 0;
-  for(size_t i = 0; i <= s_VisionRadius; i++) {
-    for(size_t j = 0; j <= s_VisionRadius; j++) {
+  for(u_char i = 0; i <= s_VisionRadius; i++) {
+    for(u_char j = 0; j <= s_VisionRadius; j++) {
       if(i == 0 and j == 0)
         continue;
 

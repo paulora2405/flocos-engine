@@ -26,8 +26,8 @@ TestGrid::TestGrid()
 
   LOG(DEBUG) << "Grid " << m_GridM << 'x' << m_GridN << " (offset = " << offset << " pixels)";
 
-  for(size_t i = 0; i < m_GridM; i++)
-    for(size_t j = 0; j < m_GridN; j++)
+  for(uint i = 0; i < m_GridM; i++)
+    for(uint j = 0; j < m_GridN; j++)
       m_Translations.push_back(glm::vec3{offset * i, offset * j, 0});
 
   LOG(DEBUG) << "m_Translations.size() = " << m_Translations.size();
@@ -81,9 +81,7 @@ void TestGrid::onRender() {
   GE::Renderer re;
   m_Texture->bind();
 
-  // for(size_t i = 0; i < m_GridM; i++) {
-  //   for(size_t j = 0; j < m_GridN; j++) {
-  for(size_t i = 0; i < m_GridM * m_GridN; i++) {
+  for(uint i = 0; i < m_GridM * m_GridN; i++) {
     glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), m_Translations.at(i));
     /* P * V * M because opengl uses coloum-major matrices */
     glm::mat4 mvp = m_ProjMatrix * m_ViewMatrix * model_matrix;
