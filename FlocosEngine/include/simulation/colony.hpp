@@ -24,6 +24,8 @@ private:
   const u_short m_AntVisionRadius;
   const u_short m_GridM;
   const u_short m_GridN;
+  bool m_Finishing;
+  bool m_Finished;
   std::vector<std::unique_ptr<SIM::Ant>> m_AliveAnts;
   std::vector<std::unique_ptr<SIM::DeadAnt>> m_DeadAnts;
 
@@ -35,8 +37,11 @@ public:
          const u_short &AntVisionRadius);
   ~Colony();
 
-  void action();
-  void movement();
+  inline bool hasFinished() const { return m_Finished; }
+  inline void endIterations() { m_Finishing = true; }
+  std::vector<bool> getGridState() const;
+  void action(std::unique_ptr<Ant> &ant);
+  void movement(std::unique_ptr<Ant> &ant, std::vector<std::unique_ptr<Ant>> &newAnts);
   void iterate();
   bool willDrop(const uint &closeDeadAnts);
   bool willTake(const uint &closeDeadAnts);

@@ -53,69 +53,85 @@ bool Colony::willTake(const uint &closeDeadAnts) {
   return false;
 }
 
-void Colony::action() {
+void Colony::action(std::unique_ptr<Ant> &ant) {
   /* State Change: dropping and taking */
-  for(auto &ant : m_AliveAnts) {
-    /* If an alive ant is in this position */
-    if(ant) {
-      /* If there is a free alive ant and a free dead ant */
-      if(this->query(ant->getPos()) == GridState::BothFree) {
-        /* If the alive ants decides to take dead ant */
-        if(willTake(ant->lookAndCount(m_DeadAnts, m_GridM, m_GridN)))
-          ant->take(std::move(m_DeadAnts[ant->getPos().x * m_GridM + ant->getPos().y]));
+  /* If there is a free alive ant and a free dead ant */
+  if(this->query(ant->getPos()) == GridState::BothFree) {
+    /* If the alive ants decides to take dead ant */
+    if(willTake(ant->lookAndCount(m_DeadAnts, m_GridM, m_GridN)))
+      ant->take(std::move(m_DeadAnts[ant->getPos().x * m_GridM + ant->getPos().y]));
 
-        /* If there is an alive ant carrying a dead ant */
-      } else if(this->query(ant->getPos()) == GridState::AliveBusy) {
-        /* If the alive ant decides to drop the dead ant */
-        if(willDrop(ant->lookAndCount(m_DeadAnts, m_GridM, m_GridN)))
-          m_DeadAnts.at(ant->getPos().x * m_GridM + ant->getPos().y) = ant->drop();
+    /* If there is an alive ant carrying a dead ant */
+  } else if(this->query(ant->getPos()) == GridState::AliveBusy) {
+    /* If the alive ant decides to drop the dead ant */
+    if(willDrop(ant->lookAndCount(m_DeadAnts, m_GridM, m_GridN)))
+      m_DeadAnts.at(ant->getPos().x * m_GridM + ant->getPos().y) = ant->drop();
 
-        /* If there is an AliveAnt busy and a DeadAnt free */
-      } else if(this->query(ant->getPos()) == GridState::AliveBusyDeadFree) {
-        /* Do nothing  */
-      }
-    }
+    /* If there is an AliveAnt busy and a DeadAnt free */
+  } else if(this->query(ant->getPos()) == GridState::AliveBusyDeadFree) {
+    /* Do nothing  */
   }
 }
 
-void Colony::movement() {
+void Colony::movement(std::unique_ptr<Ant> &ant, std::vector<std::unique_ptr<Ant>> &newAnts) {
   /* Movement */
+  Pos newPos = ant->walk(m_AliveAnts, m_GridM, m_GridN);
+
+  /* If there isn's an alive ant already going to new position */
+  if(!newAnts[newPos.x * m_GridM + newPos.y]) {
+    newAnts[newPos.x * m_GridM + newPos.y] =
+        std::make_unique<Ant>(newPos, ant->getState(), ant->transferCarrying());
+
+    /* If an alive ant already is going to the new position, it stays in the old position */
+  } else {
+    newAnts[ant->getPos().x * m_GridM + ant->getPos().y] =
+        std::make_unique<Ant>(ant->getPos(), ant->getState(), ant->transferCarrying());
+  }
+}
+
+void Colony::iterate() {
   std::vector<std::unique_ptr<Ant>> newAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
   std::vector<std::unique_ptr<DeadAnt>> newDeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
-  Pos newPos;
   uint i = 0, j = 0;
+  bool foundOne = false;
   for(auto &ant : m_AliveAnts) {
     /* If an alive ant is in this position */
     if(ant) {
-      newPos = ant->walk(m_AliveAnts, m_GridM, m_GridN);
-
-      /* If there isn's an alive ant already going to new position */
-      if(!newAnts[newPos.x * m_GridM + newPos.y]) {
-        newAnts[newPos.x * m_GridM + newPos.y] =
-            std::make_unique<Ant>(newPos, ant->getState(), ant->transferCarrying());
-
-        /* If an alive ant already is going to the new position, it stays in the old position */
-      } else {
-        newAnts[ant->getPos().x * m_GridM + ant->getPos().y] =
-            std::make_unique<Ant>(ant->getPos(), ant->getState(), ant->transferCarrying());
+      foundOne = true;
+      if(m_Finishing and ant->getState() == AntState::Free)
+        ant = nullptr;
+      else {
+        this->action(ant);
+        this->movement(ant, newAnts);
       }
     }
+
     /* If there is a dead ant in this position, it stays there */
     if(m_DeadAnts[i * m_GridM + j])
       newDeadAnts[i * m_GridM + j] = std::make_unique<DeadAnt>(i, j);
 
     if(++j >= m_GridN)
-      j = 0, i++;
+      j = 0, ++i;
   }
-
+  if(!foundOne)
+    m_Finished = true;
   /* Replace old vectors with the new ones */
   m_AliveAnts = std::move(newAnts);
   m_DeadAnts = std::move(newDeadAnts);
 }
 
-void Colony::iterate() {
-  this->movement();
-  this->action();
+std::vector<bool> Colony::getGridState() const {
+  std::vector<bool> ret(static_cast<std::size_t>(m_GridM * m_GridN), false);
+
+  uint32_t i = 0, j = 0;
+  for(const auto &deadAnt : m_DeadAnts) {
+    if(deadAnt)
+      ret[i * m_GridM + j] = true;
+    if(++j >= m_GridN)
+      j = 0, ++i;
+  }
+
+  return ret;
 }
 
 GridState Colony::query(Pos pos) {
@@ -149,6 +165,8 @@ Colony::Colony(const u_short &gridM,
       m_AntVisionRadius{AntVisionRadius},
       m_GridM{gridM},
       m_GridN{gridN},
+      m_Finishing{false},
+      m_Finished{false},
       m_AliveAnts{static_cast<std::size_t>(m_GridM * m_GridN)},
       m_DeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)} {
   LOG(DEBUG) << "Colony Constructed (" << gridM * gridN << " cells)";
