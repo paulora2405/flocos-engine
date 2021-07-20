@@ -88,6 +88,9 @@ unsigned short GraphicsEngine::getWindowHeight() const {
 void GraphicsEngine::init() {
   LOG(INFO) << "Initializing the GraphicsEngine instance";
   /* Initialize GLFW library */
+  glfwSetErrorCallback([](int error, const char* description) {
+    LOG(ERROR) << "Error (" << error << "): " << description << '\n';
+  });
   if(!glfwInit()) {
     LOG(ERROR) << "GLFW COULD NOT INITIALIZE";
     return;
@@ -162,8 +165,8 @@ GraphicsEngine& GraphicsEngine::getInstance(const unsigned short& width,
 GraphicsEngine::GraphicsEngine(const unsigned short& width, const unsigned short& height)
     : m_width{width},
       m_height{height} {
-  // LOG(DEBUG) << std::filesystem::current_path();
-  std::filesystem::current_path("../../..");
+  LOG(DEBUG) << std::filesystem::current_path();
+  // std::filesystem::current_path("../../..");
   // std::filesystem::current_path("/home/paulo/git/flocos-engine/");
 
   /* Logger configuration */
