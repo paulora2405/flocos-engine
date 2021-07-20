@@ -31,6 +31,8 @@ private:
   bool m_Initiated;
   bool m_Paused;
   bool m_HideAlive;
+  bool m_Finishing;
+  bool m_Finished;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
   std::unique_ptr<SIM::Colony> m_Colony;
@@ -46,6 +48,7 @@ public:
 
   void init();
   void updateGrid();
+  void saveGridToFile();
 
   void onUpdate(float &deltaTime) override;
   void onRender() override;

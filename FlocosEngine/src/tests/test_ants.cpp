@@ -1,6 +1,8 @@
 #include "tests/test_ants.hpp"
 
+#include <fstream>
 #include <random>
+#include <string>
 
 #include "graphics/graphics_engine.hpp"
 #include "graphics/renderer.hpp"
@@ -9,6 +11,20 @@
 #include "vendor/imgui/imgui.h"
 
 namespace TEST {
+
+void TestAnts::saveGridToFile() {
+  auto gridState = m_Colony->getGridState();
+  std::string filename{"grid" + std::to_string(m_GridM) + 'x' + std::to_string(m_GridN) + ".pgm"};
+  std::ofstream os(filename);
+  if(os.is_open()) {
+    os << "P2\n" << m_GridM << ' ' << m_GridN << " 1\n";
+    for(int j = m_GridN - 1; j >= 0; --j) {
+      for(int i = 0; i < m_GridM; ++i)
+        os << (gridState[i * m_GridM + j] ? "0" : "1") << '\n';
+    }
+  } else
+    LOG(ERROR) << "Couldn't open " << filename << "!";
+}
 
 void TestAnts::init() {
   LOG(INFO) << "Initializing Ants Simulation Test";
@@ -44,7 +60,7 @@ void TestAnts::init() {
     else if(state == SIM::GridState::AliveBusy)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
-    for(u_char j = 0; j < 4; j++) {
+    for(u_char j = 0; j < 4; ++j) {
       m_Positions[i + 2 + j * 6] = r;
       m_Positions[i + 3 + j * 6] = g;
       m_Positions[i + 4 + j * 6] = b;
@@ -64,8 +80,7 @@ void TestAnts::init() {
     if(++n >= m_GridN) {
       offX += cellOffset;
       offY = (m_WinWidth <= m_WinHeight) * ((m_WinHeight - m_WinWidth) / 2);
-      n = 0;
-      m++;
+      n = 0, ++m;
     } else {
       offY += cellOffset;
     }
@@ -121,7 +136,7 @@ void TestAnts::updateGrid() {
     else
       r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
 
-    for(u_char j = 0; j < 4; j++) {
+    for(u_char j = 0; j < 4; ++j) {
       m_Positions[i + 2 + j * 6] = r;
       m_Positions[i + 3 + j * 6] = g;
       m_Positions[i + 4 + j * 6] = b;
@@ -138,16 +153,13 @@ void TestAnts::updateGrid() {
 
 void TestAnts::onUpdate(float &deltaTime) {
   deltaTime = deltaTime;
-  static uint tick = 1;
-  if(!m_Paused and m_Initiated) {
-    if(tick++ >= 8) {
-      for(uint i = 0; i < 10; i++) {
-      }
-      updateGrid();
-      tick = 1;
-    }
+  static uint tick = 0;
+  if(!m_Paused and m_Initiated and !m_Finished) {
+    if(++tick >= 8)
+      updateGrid(), tick = 0;
+
     m_Colony->iterate();
-    m_Iterations++;
+    ++m_Iterations;
   }
 }
 
@@ -223,25 +235,37 @@ void TestAnts::onImGuiRender() {
                             .c_str());
 
     static std::string pauseText{"Start"};
-    if(ImGui::Button(pauseText.c_str())) {
+    if(!m_Finished and ImGui::Button(pauseText.c_str())) {
       m_Paused = !m_Paused;
       if(m_Paused)
         pauseText = "Continue";
       else
         pauseText = "Pause";
     }
-    if(ImGui::Button("Hide/Show AliveAnts"))
+    if(!m_Finished and ImGui::Button("Hide/Show AliveAnts"))
       m_HideAlive = !m_HideAlive;
-    if(m_Paused)
+    if(!m_Finished and m_Paused)
       if(ImGui::Button("Update One Tick")) {
         m_Colony->iterate();
-        m_Iterations++;
+        ++m_Iterations;
         this->updateGrid();
       }
-    if(ImGui::Button("FastForward 10000 Iterations")) {
-      for(uint i = 0; i < 10000; i++) {
+    if(!m_Finished and ImGui::Button("FastForward 10000 Iterations")) {
+      for(uint i = 0; i < 10000; ++i) {
         m_Colony->iterate();
-        m_Iterations++;
+        ++m_Iterations;
+      }
+    }
+    if(!m_Finishing) {
+      if(ImGui::Button("Finish")) {
+        m_Colony->endIterations();
+        m_Finishing = true;
+      }
+    } else if(m_Finished or m_Colony->hasFinished()) {
+      m_Finished = true;
+      this->updateGrid();
+      if(ImGui::Button("Save Current State to File")) {
+        this->saveGridToFile();
       }
     }
   }
@@ -265,6 +289,8 @@ TestAnts::TestAnts()
       m_Initiated{false},
       m_Paused{true},
       m_HideAlive{false},
+      m_Finishing{false},
+      m_Finished{false},
       m_ProjMatrix{glm::ortho(0.0f, (float)m_WinWidth, 0.0f, (float)m_WinHeight, -1.0f, 1.0f)},
       m_ViewMatrix{glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))},
       m_Colony{} {
