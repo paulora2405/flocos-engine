@@ -4,6 +4,10 @@
 #include <memory>
 #include <vector>
 
+typedef uint8_t u_char;
+typedef uint32_t uint;
+typedef uint16_t u_short;
+
 namespace SIM {
 
 enum class AntState : u_char { Free, Busy };
