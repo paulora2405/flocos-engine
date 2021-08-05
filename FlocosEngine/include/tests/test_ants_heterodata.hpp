@@ -1,5 +1,5 @@
-#ifndef TEST_ANTS_HPP
-#define TEST_ANTS_HPP
+#ifndef TEST_ANTS_HETERODATA_HPP
+#define TEST_ANTS_HETERODATA_HPP
 
 #include <filesystem>
 #include <memory>
@@ -9,13 +9,13 @@
 #include "graphics/vertex_array.hpp"
 #include "graphics/vertex_buffer.hpp"
 #include "graphics/vertex_buffer_layout.hpp"
-#include "simulation/colony.hpp"
+#include "simulation/colony_heterodata.hpp"
 #include "tests/test.hpp"
 #include "vendor/glm/glm.hpp"
 
 namespace TEST {
 
-class TestAnts : public Test {
+class TestAntsHeterodata : public Test {
 private:
   u_short m_WinWidth;
   u_short m_WinHeight;
@@ -36,7 +36,7 @@ private:
   bool m_Finished;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
-  std::unique_ptr<SIM::Colony> m_Colony;
+  std::unique_ptr<SIM_HETERODATA::ColonyHeterodata> m_Colony;
   std::unique_ptr<GE::VertexArray> m_VAO;
   std::unique_ptr<GE::VertexBuffer> m_VB;
   std::unique_ptr<GE::VertexBufferLayout> m_VBL;
@@ -44,12 +44,14 @@ private:
   std::unique_ptr<GE::Shader> m_Shader;
 
 public:
-  TestAnts();
-  ~TestAnts();
+  TestAntsHeterodata();
+  ~TestAntsHeterodata();
 
-  void init();
+  void init(std::vector<std::array<float, 3>> data);
   void updateGrid();
   void saveGridToFile();
+  std::vector<std::array<float, SIM_HETERODATA::dataSize>> inputData(
+      std::filesystem::path filepath);
 
   void onUpdate(float &deltaTime) override;
   void onRender() override;

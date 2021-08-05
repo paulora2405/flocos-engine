@@ -1,4 +1,4 @@
-#include "tests/test_ants.hpp"
+#include "tests/test_ants_heterodata.hpp"
 
 #include <fstream>
 #include <random>
@@ -12,7 +12,27 @@
 
 namespace TEST {
 
-void TestAnts::saveGridToFile() {
+std::vector<std::array<float, SIM_HETERODATA::dataSize>> TestAntsHeterodata::inputData(
+    std::filesystem::path filepath) {
+  std::vector<std::array<float, SIM_HETERODATA::dataSize>> data;
+
+  std::ifstream source("res/inputs/4_groups.txt");
+
+  if(source.is_open()) {
+    for(std::string line; std::getline(source, line);) {
+      std::istringstream in(line);
+
+      float x, y, z;
+      in >> x >> y >> z;
+      data.push_back({x, y, z});
+    }
+  } else
+    LOG(ERROR) << "Could not open " << filepath;
+
+  return data;
+}
+
+void TestAntsHeterodata::saveGridToFile() {
   auto gridState = m_Colony->getGridState();
   std::string filename{"grid" + std::to_string(m_GridM) + 'x' + std::to_string(m_GridN) + ".pgm"};
   std::ofstream os(filename);
@@ -26,7 +46,7 @@ void TestAnts::saveGridToFile() {
     LOG(ERROR) << "Couldn't open " << filename << "!";
 }
 
-void TestAnts::init() {
+void TestAntsHeterodata::init(std::vector<std::array<float, SIM_HETERODATA::dataSize>> data) {
   LOG(INFO) << "Initializing Ants Simulation Test";
   LOG(DEBUG) << "Initializing Ants Simulation Test";
   float offX = (m_WinHeight < m_WinWidth) * ((m_WinWidth - m_WinHeight) / 2);
@@ -38,7 +58,8 @@ void TestAnts::init() {
   m_PosSize = cellsTotal * 4 * 6;
   m_IndSize = cellsTotal * 6;
 
-  m_Colony = std::make_unique<SIM::Colony>(m_GridM, m_GridN, m_AliveQnt, m_DeadQnt, m_VisionRadius);
+  m_Colony = std::make_unique<SIM_HETERODATA::ColonyHeterodata>(m_GridM, m_GridN, m_AliveQnt,
+                                                                m_DeadQnt, m_VisionRadius, data);
 
   m_Positions = std::make_unique<float[]>(m_PosSize);
   m_Indices = std::make_unique<uint[]>(m_IndSize);
@@ -46,18 +67,18 @@ void TestAnts::init() {
   uint n = 0, m = 0;
   for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
-    SIM::GridState state = m_Colony.get()->query(m, n);
+    SIM_HETERODATA::GridState state = m_Colony.get()->query(m, n);
     float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
 
-    if(state == SIM::GridState::Empty)
+    if(state == SIM_HETERODATA::GridState::Empty)
       r = g = b = a = 1.0f;
-    else if(state == SIM::GridState::DeadFree)
+    else if(state == SIM_HETERODATA::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::AliveFree)
+    else if(state == SIM_HETERODATA::GridState::AliveFree)
       r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::BothFree)
+    else if(state == SIM_HETERODATA::GridState::BothFree)
       r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM::GridState::AliveBusy)
+    else if(state == SIM_HETERODATA::GridState::AliveBusy)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
 
     for(u_char j = 0; j < 4; ++j) {
@@ -110,28 +131,29 @@ void TestAnts::init() {
 
 //
 
-void TestAnts::updateGrid() {
+void TestAntsHeterodata::updateGrid() {
   uint n = 0, m = 0;
   for(uint i = 0; i < m_PosSize; i += 4 * 6) {
     // vec4 of rgba
-    SIM::GridState state = m_Colony->query(m, n);
+    SIM_HETERODATA::GridState state = m_Colony->query(m, n);
     float r = 0.0f, g = 0.0f, b = 1.0f, a = 1.0f;
 
-    if(state == SIM::GridState::Empty)
+    if(state == SIM_HETERODATA::GridState::Empty)
       r = g = b = a = 1.0f;
-    else if(state == SIM::GridState::DeadFree)
+    else if(state == SIM_HETERODATA::GridState::DeadFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
     else if(!m_HideAlive) {
-      if(state == SIM::GridState::AliveFree)
+      if(state == SIM_HETERODATA::GridState::AliveFree)
         r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-      if(state == SIM::GridState::AliveBusy)
+      if(state == SIM_HETERODATA::GridState::AliveBusy)
         r = 1.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-      if(state == SIM::GridState::AliveBusyDeadFree)
+      if(state == SIM_HETERODATA::GridState::AliveBusyDeadFree)
         r = 1.0f, g = 0.4f, b = 0.0f, a = 1.0f;
-      if(state == SIM::GridState::BothFree)
+      if(state == SIM_HETERODATA::GridState::BothFree)
         r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
-    } else if(state == SIM::GridState::AliveBusy or state == SIM::GridState::AliveBusyDeadFree or
-              state == SIM::GridState::BothFree)
+    } else if(state == SIM_HETERODATA::GridState::AliveBusy or
+              state == SIM_HETERODATA::GridState::AliveBusyDeadFree or
+              state == SIM_HETERODATA::GridState::BothFree)
       r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
     else
       r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
@@ -151,7 +173,7 @@ void TestAnts::updateGrid() {
 
 //
 
-void TestAnts::onUpdate(float& deltaTime) {
+void TestAntsHeterodata::onUpdate(float& deltaTime) {
   deltaTime = deltaTime;
   static uint tick = 0;
   if(!m_Paused and m_Initiated and !m_Finished) {
@@ -165,7 +187,7 @@ void TestAnts::onUpdate(float& deltaTime) {
 
 //
 
-void TestAnts::onRender() {
+void TestAntsHeterodata::onRender() {
   GLCALL(glClearColor(0.85f, 0.96f, 0.65f, 1.0f));
   GLCALL(glClear(GL_COLOR_BUFFER_BIT));
   if(m_Initiated) {
@@ -183,8 +205,15 @@ void TestAnts::onRender() {
 
 //
 
-void TestAnts::onImGuiRender() {
+void TestAntsHeterodata::onImGuiRender() {
   if(!m_Initiated) {
+    static char filepath[64] = "";
+    ImGui::InputTextWithHint("Filepath", "4_groups.txt", filepath, 64);
+    if(ImGui::Button("Input Data")) {
+      m_Initiated = true;
+      this->init(this->inputData(filepath));
+    }
+
     ImGui::Text("Enter the size MxN of the Grid:");
     if(ImGui::IsItemHovered())
       ImGui::SetTooltip("If either input is left empty,\nthe default grid will be initialized.");
@@ -220,7 +249,7 @@ void TestAnts::onImGuiRender() {
         m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 3;
       }
       m_Initiated = true;
-      this->init();
+      this->init({});
     }
   } else {
     ImGui::Text(std::string("Running " + std::to_string(m_GridM) + 'x' + std::to_string(m_GridN) +
@@ -272,7 +301,7 @@ void TestAnts::onImGuiRender() {
 
 //
 
-TestAnts::TestAnts()
+TestAntsHeterodata::TestAntsHeterodata()
     : m_WinWidth{GE::GraphicsEngine::getInstance().getWindowWidth()},
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
       m_GridM{100},
@@ -298,6 +327,6 @@ TestAnts::TestAnts()
 
 //
 
-TestAnts::~TestAnts() {}
+TestAntsHeterodata::~TestAntsHeterodata() {}
 
 }  // namespace TEST

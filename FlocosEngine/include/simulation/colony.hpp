@@ -35,7 +35,7 @@ public:
          const u_short &aliveAnts,
          const u_short &deadAnts,
          const u_short &AntVisionRadius);
-  ~Colony();
+  /* ~Colony(); */
 
   inline bool hasFinished() const { return m_Finished; }
   inline void endIterations() { m_Finishing = true; }
@@ -43,10 +43,10 @@ public:
   void action(std::unique_ptr<Ant> &ant);
   void movement(std::unique_ptr<Ant> &ant, std::vector<std::unique_ptr<Ant>> &newAnts);
   void iterate();
-  bool willDrop(const uint &closeDeadAnts);
-  bool willTake(const uint &closeDeadAnts);
+  bool willDrop(const uint32_t &closeDeadAnts);
+  bool willTake(const uint32_t &closeDeadAnts);
   GridState query(Pos pos);
-  GridState query(uint x, uint y);
+  GridState query(uint32_t x, uint32_t y);
 };
 
 }  // namespace SIM

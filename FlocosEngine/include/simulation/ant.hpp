@@ -5,7 +5,7 @@
 #include <vector>
 
 typedef uint8_t u_char;
-typedef uint32_t uint;
+typedef uint32_t uint32_t;
 typedef uint16_t u_short;
 
 namespace SIM {
@@ -13,8 +13,7 @@ namespace SIM {
 enum class AntState : u_char { Free, Busy };
 
 struct Pos {
-  uint x;
-  uint y;
+  uint32_t x, y;
 };
 
 struct DeadAnt {
@@ -22,11 +21,8 @@ struct DeadAnt {
   Pos m_Pos;
 
   DeadAnt(Pos pos) : m_State{AntState::Free}, m_Pos{pos} {}
-  DeadAnt(uint x, uint y) : m_State{AntState::Free}, m_Pos{x, y} {}
-  DeadAnt(Pos pos, AntState state) : m_State{state}, m_Pos{pos} {}
-  DeadAnt(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y} {}
-  Pos getPos() { return m_Pos; }
-  AntState getState() { return m_State; }
+  AntState getState() const { return m_State; }
+  Pos getPos() const { return m_Pos; }
   void setState(AntState state) { m_State = state; }
 };
 
@@ -39,21 +35,21 @@ private:
 
 public:
   Ant(Pos pos);
-  Ant(uint x, uint y);
+  Ant(uint32_t x, uint32_t y);
   Ant(Pos pos, AntState state);
-  Ant(uint x, uint y, AntState state);
+  Ant(uint32_t x, uint32_t y, AntState state);
   Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying);
-  Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying);
-  ~Ant();
+  Ant(uint32_t x, uint32_t y, AntState state, std::unique_ptr<DeadAnt> carrying);
+  /* ~Ant(); */
 
   std::unique_ptr<DeadAnt> drop();
   void take(std::unique_ptr<DeadAnt> &&toCarry);
   Pos walk(const std::vector<std::unique_ptr<SIM::Ant>> &ants,
            const u_short &gridM,
            const u_short &gridN);
-  uint lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
-                    const u_short &gridM,
-                    const u_short &gridN);
+  uint32_t lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
+                        const u_short &gridM,
+                        const u_short &gridN);
 
   AntState getState() const;
   Pos getPos() const;

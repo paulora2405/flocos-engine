@@ -12,6 +12,7 @@
 #include "graphics/vertex_buffer_layout.hpp"
 #include "inputs/inputs.hpp"
 #include "tests/test_ants.hpp"
+#include "tests/test_ants_heterodata.hpp"
 #include "tests/test_batch_render.hpp"
 #include "tests/test_clear_color.hpp"
 #include "tests/test_grid.hpp"
@@ -40,6 +41,7 @@ void GraphicsEngine::mainLoop() {
   testMenu->registerTest<TEST::TestGrid>("TestGrid");
   testMenu->registerTest<TEST::TestBatchRender>("TestBatchRender");
   testMenu->registerTest<TEST::TestAnts>("Ants Simulation");
+  testMenu->registerTest<TEST::TestAntsHeterodata>("Ants Simulation HeteroData");
   float timeDelta = 0.0f;
 
   while(!glfwWindowShouldClose(this->m_window)) {
@@ -119,7 +121,8 @@ void GraphicsEngine::init() {
   glfwMakeContextCurrent(m_window);
 
   GLFWimage icon[1];
-  icon[0].pixels = stbi_load("res/textures/dog2.png", &icon[0].width, &icon[0].height, 0, 4);
+  icon[0].pixels =
+      stbi_load("res/textures/dog_transparent.png", &icon[0].width, &icon[0].height, 0, 4);
   glfwSetWindowIcon(this->m_window, 1, icon);
   stbi_image_free(icon[0].pixels);
 

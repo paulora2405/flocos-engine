@@ -17,11 +17,14 @@ add_library(
   inputs/inputs.cpp
 
   simulation/ant.cpp
+  simulation/ant_heterodata.cpp
   simulation/colony.cpp
+  simulation/colony_heterodata.cpp
 
   logging/gl_error.cpp
 
   tests/test_ants.cpp
+  tests/test_ants_heterodata.cpp
   tests/test_batch_render.cpp
   tests/test_clear_color.cpp
   tests/test_grid.cpp
