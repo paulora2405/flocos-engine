@@ -21,13 +21,13 @@ struct Data {
   std::array<float, dataSize - 1> vec;
 };
 
-struct DeadAntHeterodata {
+struct DeadAnt {
   AntState m_State;
   Pos m_Pos;
   Data m_Data;
   uint32_t m_Group = 0;
 
-  DeadAntHeterodata(Pos pos, Data data, uint32_t group)
+  DeadAnt(Pos pos, Data data, uint32_t group)
       : m_State{AntState::Free},
         m_Pos{pos},
         m_Data{data},
@@ -39,37 +39,34 @@ struct DeadAntHeterodata {
   void setState(AntState state) { m_State = state; }
 };
 
-class AntHeterodata {
+class Ant {
 private:
   AntState m_State;
   Pos m_Pos;
-  std::unique_ptr<DeadAntHeterodata> m_Carrying;
+  std::unique_ptr<DeadAnt> m_Carrying;
   static u_short s_VisionRadius;
 
 public:
-  AntHeterodata(Pos pos);
-  AntHeterodata(uint32_t x, uint32_t y);
-  AntHeterodata(Pos pos, AntState state);
-  AntHeterodata(uint32_t x, uint32_t y, AntState state);
-  AntHeterodata(Pos pos, AntState state, std::unique_ptr<DeadAntHeterodata> carrying);
-  AntHeterodata(uint32_t x,
-                uint32_t y,
-                AntState state,
-                std::unique_ptr<DeadAntHeterodata> carrying);
-  /* ~AntHeterodata(); */
+  Ant(Pos pos);
+  Ant(uint32_t x, uint32_t y);
+  Ant(Pos pos, AntState state);
+  Ant(uint32_t x, uint32_t y, AntState state);
+  Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying);
+  Ant(uint32_t x, uint32_t y, AntState state, std::unique_ptr<DeadAnt> carrying);
+  /* ~Ant(); */
 
-  std::unique_ptr<DeadAntHeterodata> drop();
-  void take(std::unique_ptr<DeadAntHeterodata> &&toCarry);
-  Pos walk(const std::vector<std::unique_ptr<SIM_HETERODATA::AntHeterodata>> &ants,
+  std::unique_ptr<DeadAnt> drop();
+  void take(std::unique_ptr<DeadAnt> &&toCarry);
+  Pos walk(const std::vector<std::unique_ptr<SIM_HETERODATA::Ant>> &ants,
            const u_short &gridM,
            const u_short &gridN);
-  uint32_t lookAndCount(const std::vector<std::unique_ptr<DeadAntHeterodata>> &deadAnts,
+  uint32_t lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
                         const u_short &gridM,
                         const u_short &gridN);
 
   AntState getState() const;
   Pos getPos() const;
-  std::unique_ptr<DeadAntHeterodata> transferCarrying();
+  std::unique_ptr<DeadAnt> transferCarrying();
 
   static void setRadius(u_short radius);
   static u_short getRadius();

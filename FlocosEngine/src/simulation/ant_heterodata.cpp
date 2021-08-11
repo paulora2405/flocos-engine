@@ -6,11 +6,11 @@
 
 namespace SIM_HETERODATA {
 
-u_short AntHeterodata::s_VisionRadius = 0;
+u_short Ant::s_VisionRadius = 0;
 
-Pos AntHeterodata::walk(const std::vector<std::unique_ptr<SIM_HETERODATA::AntHeterodata>> &ants,
-                        const u_short &gridM,
-                        const u_short &gridN) {
+Pos Ant::walk(const std::vector<std::unique_ptr<SIM_HETERODATA::Ant>> &ants,
+              const u_short &gridM,
+              const u_short &gridN) {
   static std::default_random_engine gen;
   static std::uniform_int_distribution<uint> directionChoice(1, 8);
   const uint direction = directionChoice(gen);
@@ -47,21 +47,21 @@ Pos AntHeterodata::walk(const std::vector<std::unique_ptr<SIM_HETERODATA::AntHet
   return newPos;
 }
 
-std::unique_ptr<DeadAntHeterodata> AntHeterodata::drop() {
+std::unique_ptr<DeadAnt> Ant::drop() {
   m_State = AntState::Free;
   m_Carrying->setState(AntState::Free);
   return std::move(m_Carrying);
 }
 
-void AntHeterodata::take(std::unique_ptr<DeadAntHeterodata> &&toCarry) {
+void Ant::take(std::unique_ptr<DeadAnt> &&toCarry) {
   m_State = AntState::Busy;
   toCarry->setState(AntState::Busy);
   m_Carrying = std::move(toCarry);
 }
 
-uint AntHeterodata::lookAndCount(const std::vector<std::unique_ptr<DeadAntHeterodata>> &deadAnts,
-                                 const u_short &gridM,
-                                 const u_short &gridN) {
+uint Ant::lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
+                       const u_short &gridM,
+                       const u_short &gridN) {
   uint x = m_Pos.x;
   uint y = m_Pos.y;
   uint closeDeadAnt = 0;
@@ -110,47 +110,35 @@ uint AntHeterodata::lookAndCount(const std::vector<std::unique_ptr<DeadAntHetero
   return closeDeadAnt;
 }
 
-std::unique_ptr<DeadAntHeterodata> AntHeterodata::transferCarrying() {
+std::unique_ptr<DeadAnt> Ant::transferCarrying() {
   return std::move(m_Carrying);
 }
 
-AntState AntHeterodata::getState() const {
+AntState Ant::getState() const {
   return m_State;
 }
 
-Pos AntHeterodata::getPos() const {
+Pos Ant::getPos() const {
   return m_Pos;
 }
 
-u_short AntHeterodata::getRadius() {
-  return AntHeterodata::s_VisionRadius;
+u_short Ant::getRadius() {
+  return Ant::s_VisionRadius;
 }
 
-void AntHeterodata::setRadius(u_short radius) {
-  AntHeterodata::s_VisionRadius = radius;
+void Ant::setRadius(u_short radius) {
+  Ant::s_VisionRadius = radius;
 }
 
-AntHeterodata::AntHeterodata(Pos pos)
-    : m_State{SIM_HETERODATA::AntState::Free},
-      m_Pos{pos},
-      m_Carrying{} {}
-AntHeterodata::AntHeterodata(uint x, uint y)
-    : m_State{SIM_HETERODATA::AntState::Free},
-      m_Pos{x, y},
-      m_Carrying{} {}
-AntHeterodata::AntHeterodata(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
-AntHeterodata::AntHeterodata(uint x, uint y, AntState state)
-    : m_State{state},
-      m_Pos{x, y},
-      m_Carrying{} {}
-AntHeterodata::AntHeterodata(Pos pos, AntState state, std::unique_ptr<DeadAntHeterodata> carrying)
+Ant::Ant(Pos pos) : m_State{SIM_HETERODATA::AntState::Free}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y) : m_State{SIM_HETERODATA::AntState::Free}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state) : m_State{state}, m_Pos{pos}, m_Carrying{} {}
+Ant::Ant(uint x, uint y, AntState state) : m_State{state}, m_Pos{x, y}, m_Carrying{} {}
+Ant::Ant(Pos pos, AntState state, std::unique_ptr<DeadAnt> carrying)
     : m_State{state},
       m_Pos{pos},
       m_Carrying{std::move(carrying)} {}
-AntHeterodata::AntHeterodata(uint x,
-                             uint y,
-                             AntState state,
-                             std::unique_ptr<DeadAntHeterodata> carrying)
+Ant::Ant(uint x, uint y, AntState state, std::unique_ptr<DeadAnt> carrying)
     : m_State{state},
       m_Pos{x, y},
       m_Carrying{std::move(carrying)} {}

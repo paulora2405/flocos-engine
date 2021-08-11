@@ -17,7 +17,7 @@ enum class GridState : u_char {
   BothFree,
 };
 
-class ColonyHeterodata {
+class Colony {
 private:
   const u_short m_QntAliveAnts;
   const u_short m_QntDeadAnts;
@@ -26,24 +26,23 @@ private:
   const u_short m_GridN;
   bool m_Finishing;
   bool m_Finished;
-  std::vector<std::unique_ptr<SIM_HETERODATA::AntHeterodata>> m_AliveAnts;
-  std::vector<std::unique_ptr<SIM_HETERODATA::DeadAntHeterodata>> m_DeadAnts;
+  std::vector<std::unique_ptr<SIM_HETERODATA::Ant>> m_AliveAnts;
+  std::vector<std::unique_ptr<SIM_HETERODATA::DeadAnt>> m_DeadAnts;
 
 public:
-  ColonyHeterodata(const u_short &gridM,
-                   const u_short &gridN,
-                   const u_short &aliveAnts,
-                   const u_short &deadAnts,
-                   const u_short &AntVisionRadius,
-                   std::vector<std::array<float, dataSize>> data);
-  /* ~ColonyHeterodata(); */
+  Colony(const u_short &gridM,
+         const u_short &gridN,
+         const u_short &aliveAnts,
+         const u_short &deadAnts,
+         const u_short &AntVisionRadius,
+         std::vector<std::array<float, dataSize>> data);
+  /* ~Colony(); */
 
   inline bool hasFinished() const { return m_Finished; }
   inline void endIterations() { m_Finishing = true; }
   std::vector<bool> getGridState() const;
-  void action(std::unique_ptr<AntHeterodata> &ant);
-  void movement(std::unique_ptr<AntHeterodata> &ant,
-                std::vector<std::unique_ptr<AntHeterodata>> &newAnts);
+  void action(std::unique_ptr<Ant> &ant);
+  void movement(std::unique_ptr<Ant> &ant, std::vector<std::unique_ptr<Ant>> &newAnts);
   void iterate();
   bool willDrop(const uint32_t &closeDeadAnts);
   bool willTake(const uint32_t &closeDeadAnts);

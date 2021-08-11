@@ -36,7 +36,7 @@ private:
   bool m_Finished;
   glm::mat4 m_ProjMatrix;
   glm::mat4 m_ViewMatrix;
-  std::unique_ptr<SIM_HETERODATA::ColonyHeterodata> m_Colony;
+  std::unique_ptr<SIM_HETERODATA::Colony> m_Colony;
   std::unique_ptr<GE::VertexArray> m_VAO;
   std::unique_ptr<GE::VertexBuffer> m_VB;
   std::unique_ptr<GE::VertexBufferLayout> m_VBL;

@@ -26,12 +26,12 @@ namespace SIM_HETERODATA {
 //   }
 // }
 
-bool ColonyHeterodata::willDrop(const uint32_t &closeDeadAnts) {
+bool Colony::willDrop(const uint32_t &closeDeadAnts) {
   static std::default_random_engine gen(
       std::chrono::system_clock::now().time_since_epoch().count());
   static std::uniform_real_distribution dist(0.0f, 1.0f);
 
-  const float radius = static_cast<float>(AntHeterodata::getRadius());
+  const float radius = static_cast<float>(Ant::getRadius());
   float density = closeDeadAnts / ((radius * 2 + 1) * (radius * 2 + 1) - 1);
   density *= density * density;
 
@@ -40,12 +40,12 @@ bool ColonyHeterodata::willDrop(const uint32_t &closeDeadAnts) {
   return false;
 }
 
-bool ColonyHeterodata::willTake(const uint32_t &closeDeadAnts) {
+bool Colony::willTake(const uint32_t &closeDeadAnts) {
   static std::default_random_engine gen(
       std::chrono::system_clock::now().time_since_epoch().count());
   static std::uniform_real_distribution dist(0.0f, 1.0f);
 
-  const float radius = static_cast<float>(AntHeterodata::getRadius());
+  const float radius = static_cast<float>(Ant::getRadius());
   float density = closeDeadAnts / ((radius * 2 + 1) * (radius * 2 + 1) - 1);
 
   if(dist(gen) > density)
@@ -53,7 +53,7 @@ bool ColonyHeterodata::willTake(const uint32_t &closeDeadAnts) {
   return false;
 }
 
-void ColonyHeterodata::action(std::unique_ptr<AntHeterodata> &ant) {
+void Colony::action(std::unique_ptr<Ant> &ant) {
   /* State Change: dropping and taking */
   /* If there is a free alive ant and a free dead ant */
   if(this->query(ant->getPos()) == GridState::BothFree) {
@@ -67,33 +67,31 @@ void ColonyHeterodata::action(std::unique_ptr<AntHeterodata> &ant) {
     if(willDrop(ant->lookAndCount(m_DeadAnts, m_GridM, m_GridN)))
       m_DeadAnts.at(ant->getPos().x * m_GridM + ant->getPos().y) = ant->drop();
 
-    /* If there is an AliveAnt busy and a DeadAntHeterodata free */
+    /* If there is an AliveAnt busy and a DeadAnt free */
   } else if(this->query(ant->getPos()) == GridState::AliveBusyDeadFree) {
     /* Do nothing  */
   }
 }
 
-void ColonyHeterodata::movement(std::unique_ptr<AntHeterodata> &ant,
-                                std::vector<std::unique_ptr<AntHeterodata>> &newAnts) {
+void Colony::movement(std::unique_ptr<Ant> &ant, std::vector<std::unique_ptr<Ant>> &newAnts) {
   /* Movement */
   Pos newPos = ant->walk(m_AliveAnts, m_GridM, m_GridN);
 
   /* If there isn's an alive ant already going to new position */
   if(!newAnts[newPos.x * m_GridM + newPos.y]) {
     newAnts[newPos.x * m_GridM + newPos.y] =  // move from old to new instead of creating a new one
-        std::make_unique<AntHeterodata>(newPos, ant->getState(), ant->transferCarrying());
+        std::make_unique<Ant>(newPos, ant->getState(), ant->transferCarrying());
 
     /* If an alive ant already is going to the new position, it stays in the old position */
   } else {
     newAnts[ant->getPos().x * m_GridM + ant->getPos().y] =
-        std::make_unique<AntHeterodata>(ant->getPos(), ant->getState(), ant->transferCarrying());
+        std::make_unique<Ant>(ant->getPos(), ant->getState(), ant->transferCarrying());
   }
 }
 
-void ColonyHeterodata::iterate() {
-  std::vector<std::unique_ptr<AntHeterodata>> newAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
-  std::vector<std::unique_ptr<DeadAntHeterodata>> newDeadAnts{
-      static_cast<std::size_t>(m_GridM * m_GridN)};
+void Colony::iterate() {
+  std::vector<std::unique_ptr<Ant>> newAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
+  std::vector<std::unique_ptr<DeadAnt>> newDeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)};
   uint32_t i = 0, j = 0;
   bool foundOne = false;
   for(auto &ant : m_AliveAnts) {
@@ -112,7 +110,7 @@ void ColonyHeterodata::iterate() {
     if(m_DeadAnts[i * m_GridM + j]) {
       Data tempD = m_DeadAnts[i * m_GridM + j]->getData();
       uint32_t tempG = m_DeadAnts[i * m_GridM + j]->getGroup();
-      newDeadAnts[i * m_GridM + j] = std::make_unique<DeadAntHeterodata>(Pos{i, j}, tempD, tempG);
+      newDeadAnts[i * m_GridM + j] = std::make_unique<DeadAnt>(Pos{i, j}, tempD, tempG);
     }
 
     if(++j >= m_GridN)
@@ -125,7 +123,7 @@ void ColonyHeterodata::iterate() {
   m_DeadAnts = std::move(newDeadAnts);
 }
 
-std::vector<bool> ColonyHeterodata::getGridState() const {
+std::vector<bool> Colony::getGridState() const {
   std::vector<bool> ret(static_cast<std::size_t>(m_GridM * m_GridN), false);
 
   uint32_t i = 0, j = 0;
@@ -139,11 +137,11 @@ std::vector<bool> ColonyHeterodata::getGridState() const {
   return ret;
 }
 
-GridState ColonyHeterodata::query(Pos pos) {
+GridState Colony::query(Pos pos) {
   return this->query(pos.x, pos.y);
 }
 
-GridState ColonyHeterodata::query(uint32_t x, uint32_t y) {
+GridState Colony::query(uint32_t x, uint32_t y) {
   if(!m_AliveAnts[x * m_GridM + y] and !m_DeadAnts[x * m_GridM + y])
     return GridState::Empty;
 
@@ -160,12 +158,12 @@ GridState ColonyHeterodata::query(uint32_t x, uint32_t y) {
   return GridState::DeadFree;
 }
 
-ColonyHeterodata::ColonyHeterodata(const u_short &gridM,
-                                   const u_short &gridN,
-                                   const u_short &aliveAnts,
-                                   const u_short &deadAnts,
-                                   const u_short &AntVisionRadius,
-                                   std::vector<std::array<float, dataSize>> data)
+Colony::Colony(const u_short &gridM,
+               const u_short &gridN,
+               const u_short &aliveAnts,
+               const u_short &deadAnts,
+               const u_short &AntVisionRadius,
+               std::vector<std::array<float, dataSize>> data)
     : m_QntAliveAnts{aliveAnts},
       m_QntDeadAnts{deadAnts},
       m_AntVisionRadius{AntVisionRadius},
@@ -175,9 +173,9 @@ ColonyHeterodata::ColonyHeterodata(const u_short &gridM,
       m_Finished{false},
       m_AliveAnts{static_cast<std::size_t>(m_GridM * m_GridN)},
       m_DeadAnts{static_cast<std::size_t>(m_GridM * m_GridN)} {
-  LOG(DEBUG) << "ColonyHeterodata Constructed (" << gridM * gridN << " cells)";
+  LOG(DEBUG) << "Colony Constructed (" << gridM * gridN << " cells)";
 
-  SIM_HETERODATA::AntHeterodata::setRadius(m_AntVisionRadius);
+  SIM_HETERODATA::Ant::setRadius(m_AntVisionRadius);
 
   std::default_random_engine gen;
   gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -189,7 +187,7 @@ ColonyHeterodata::ColonyHeterodata(const u_short &gridM,
     do {
       i = distM(gen), j = distN(gen);
     } while(m_AliveAnts[i * m_GridM + j]);
-    m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::AntHeterodata>(i, j);
+    m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::Ant>(i, j);
   }
 
   if(data.empty()) {
@@ -199,7 +197,7 @@ ColonyHeterodata::ColonyHeterodata(const u_short &gridM,
         i = distM(gen), j = distN(gen);
       } while(m_DeadAnts[i * m_GridM + j]);
       m_DeadAnts[i * m_GridM + j] =
-          std::make_unique<SIM_HETERODATA::DeadAntHeterodata>(Pos{i, j}, Data{0.0f, 0.0f}, 0);
+          std::make_unique<SIM_HETERODATA::DeadAnt>(Pos{i, j}, Data{0.0f, 0.0f}, 0);
     }
 
   } else {
@@ -208,7 +206,7 @@ ColonyHeterodata::ColonyHeterodata(const u_short &gridM,
       do {
         i = distM(gen), j = distN(gen);
       } while(m_DeadAnts[i * m_GridM + j]);
-      m_DeadAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::DeadAntHeterodata>(
+      m_DeadAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::DeadAnt>(
           Pos{i, j}, Data{data[k][0], data[k][1]}, static_cast<uint32_t>(data[k][2]));
     }
   }

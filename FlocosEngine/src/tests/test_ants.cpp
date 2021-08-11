@@ -279,7 +279,7 @@ TestAnts::TestAnts()
       m_GridN{100},
       m_AliveQnt{(m_GridM * m_GridN) / (uint)64 + 1},
       m_DeadQnt{(m_GridM * m_GridN) / (uint)8 + 1},
-      m_VisionRadius{3},
+      m_VisionRadius{1},
       m_Iterations{0},
       m_Positions{},
       m_PosSize{0},
