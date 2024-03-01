@@ -137,6 +137,12 @@ std::vector<bool> Colony::getGridState() const {
   return ret;
 }
 
+uint8_t Colony::getGroupAt(uint32_t x, uint32_t y) {
+  if(m_DeadAnts[x * m_GridM + y])
+    return static_cast<uint8_t>(m_DeadAnts[x * m_GridM + y]->getGroup());
+  return static_cast<uint8_t>(m_AliveAnts[x * m_GridM + y]->getCarryingGroup());
+}
+
 GridState Colony::query(Pos pos) {
   return this->query(pos.x, pos.y);
 }
@@ -163,9 +169,9 @@ Colony::Colony(const u_short &gridM,
                const u_short &aliveAnts,
                const u_short &deadAnts,
                const u_short &AntVisionRadius,
-               std::vector<std::array<float, dataSize>> data)
+               std::vector<std::vector<float>> dataWithGroup)
     : m_QntAliveAnts{aliveAnts},
-      m_QntDeadAnts{deadAnts},
+      m_QntDeadAnts{dataWithGroup.empty() ? deadAnts : static_cast<uint16_t>(dataWithGroup.size())},
       m_AntVisionRadius{AntVisionRadius},
       m_GridM{gridM},
       m_GridN{gridN},
@@ -190,14 +196,14 @@ Colony::Colony(const u_short &gridM,
     m_AliveAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::Ant>(i, j);
   }
 
-  if(data.empty()) {
+  if(dataWithGroup.empty()) {
     for(uint32_t k = 0; k < m_QntDeadAnts; k++) {
       uint32_t i, j;
       do {
         i = distM(gen), j = distN(gen);
       } while(m_DeadAnts[i * m_GridM + j]);
       m_DeadAnts[i * m_GridM + j] =
-          std::make_unique<SIM_HETERODATA::DeadAnt>(Pos{i, j}, Data{0.0f, 0.0f}, 0);
+          std::make_unique<SIM_HETERODATA::DeadAnt>(Pos{i, j}, Data{{0.0f, 0.0f}}, 0);
     }
 
   } else {
@@ -207,7 +213,8 @@ Colony::Colony(const u_short &gridM,
         i = distM(gen), j = distN(gen);
       } while(m_DeadAnts[i * m_GridM + j]);
       m_DeadAnts[i * m_GridM + j] = std::make_unique<SIM_HETERODATA::DeadAnt>(
-          Pos{i, j}, Data{data[k][0], data[k][1]}, static_cast<uint32_t>(data[k][2]));
+          Pos{i, j}, Data{{dataWithGroup.at(k).at(0), dataWithGroup.at(k).at(1)}},
+          static_cast<uint32_t>(dataWithGroup.at(k).at(2)));
     }
   }
 }

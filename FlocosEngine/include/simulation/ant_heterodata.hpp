@@ -16,9 +16,8 @@ struct Pos {
   uint32_t x, y;
 };
 
-const int dataSize = 3;
 struct Data {
-  std::array<float, dataSize - 1> vec;
+  std::vector<float> vec;
 };
 
 struct DeadAnt {
@@ -66,6 +65,7 @@ public:
 
   AntState getState() const;
   Pos getPos() const;
+  uint8_t getCarryingGroup() const;
   std::unique_ptr<DeadAnt> transferCarrying();
 
   static void setRadius(u_short radius);

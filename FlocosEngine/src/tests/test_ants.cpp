@@ -217,7 +217,7 @@ void TestAnts::onImGuiRender() {
         m_AliveQnt =
             strcmp(aliveAntsQnt, empty) ? atoi(aliveAntsQnt) : (m_GridM * m_GridN) / 64 + 1;
         m_DeadQnt = strcmp(deadAntsQnt, empty) ? atoi(deadAntsQnt) : (m_GridM * m_GridN) / 8 + 1;
-        m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 3;
+        m_VisionRadius = strcmp(antsVisionRadius, empty) ? atoi(antsVisionRadius) : 1;
       }
       m_Initiated = true;
       this->init();

@@ -110,6 +110,10 @@ uint Ant::lookAndCount(const std::vector<std::unique_ptr<DeadAnt>> &deadAnts,
   return closeDeadAnt;
 }
 
+uint8_t Ant::getCarryingGroup() const {
+  return m_Carrying->getGroup();
+}
+
 std::unique_ptr<DeadAnt> Ant::transferCarrying() {
   return std::move(m_Carrying);
 }

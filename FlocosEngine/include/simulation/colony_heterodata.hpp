@@ -35,7 +35,7 @@ public:
          const u_short &aliveAnts,
          const u_short &deadAnts,
          const u_short &AntVisionRadius,
-         std::vector<std::array<float, dataSize>> data);
+         std::vector<std::vector<float>> dataWithGroup);
   /* ~Colony(); */
 
   inline bool hasFinished() const { return m_Finished; }
@@ -46,6 +46,7 @@ public:
   void iterate();
   bool willDrop(const uint32_t &closeDeadAnts);
   bool willTake(const uint32_t &closeDeadAnts);
+  uint8_t getGroupAt(uint32_t x, uint32_t y);
   GridState query(Pos pos);
   GridState query(uint32_t x, uint32_t y);
 };

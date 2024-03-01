@@ -29,6 +29,7 @@ private:
   uint m_PosSize;
   std::unique_ptr<uint[]> m_Indices;
   uint m_IndSize;
+  std::vector<std::array<float, 3>> m_GroupsColors;
   bool m_Initiated;
   bool m_Paused;
   bool m_HideAlive;
@@ -47,11 +48,10 @@ public:
   TestAntsHeterodata();
   ~TestAntsHeterodata();
 
-  void init(std::vector<std::array<float, 3>> data);
+  void init(std::vector<std::vector<float>> dataWithGroup);
   void updateGrid();
   void saveGridToFile();
-  std::vector<std::array<float, SIM_HETERODATA::dataSize>> inputData(
-      std::filesystem::path filepath);
+  std::vector<std::vector<float>> inputData(std::filesystem::path filepath);
 
   void onUpdate(float &deltaTime) override;
   void onRender() override;

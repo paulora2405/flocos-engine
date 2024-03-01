@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <random>
+#include <set>
 #include <string>
 
 #include "graphics/graphics_engine.hpp"
@@ -12,11 +13,10 @@
 
 namespace TEST {
 
-std::vector<std::array<float, SIM_HETERODATA::dataSize>> TestAntsHeterodata::inputData(
-    std::filesystem::path filepath) {
-  std::vector<std::array<float, SIM_HETERODATA::dataSize>> data;
+std::vector<std::vector<float>> TestAntsHeterodata::inputData(std::filesystem::path filepath) {
+  std::vector<std::vector<float>> dataWithGroup;
 
-  std::ifstream source("res/inputs/4_groups.txt");
+  std::ifstream source("res/inputs/" + std::string(filepath.empty() ? "4_groups.txt" : filepath));
 
   if(source.is_open()) {
     for(std::string line; std::getline(source, line);) {
@@ -24,12 +24,14 @@ std::vector<std::array<float, SIM_HETERODATA::dataSize>> TestAntsHeterodata::inp
 
       float x, y, z;
       in >> x >> y >> z;
-      data.push_back({x, y, z});
+      dataWithGroup.push_back({x, y, z});
     }
   } else
     LOG(ERROR) << "Could not open " << filepath;
 
-  return data;
+  m_DeadQnt = dataWithGroup.size();
+
+  return dataWithGroup;
 }
 
 void TestAntsHeterodata::saveGridToFile() {
@@ -46,7 +48,7 @@ void TestAntsHeterodata::saveGridToFile() {
     LOG(ERROR) << "Couldn't open " << filename << "!";
 }
 
-void TestAntsHeterodata::init(std::vector<std::array<float, SIM_HETERODATA::dataSize>> data) {
+void TestAntsHeterodata::init(std::vector<std::vector<float>> dataWithGroup) {
   LOG(INFO) << "Initializing Ants Simulation Test";
   LOG(DEBUG) << "Initializing Ants Simulation Test";
   float offX = (m_WinHeight < m_WinWidth) * ((m_WinWidth - m_WinHeight) / 2);
@@ -58,8 +60,22 @@ void TestAntsHeterodata::init(std::vector<std::array<float, SIM_HETERODATA::data
   m_PosSize = cellsTotal * 4 * 6;
   m_IndSize = cellsTotal * 6;
 
+  std::set<uint8_t> groups;
+  for(size_t i = 0; i < dataWithGroup.size(); i++)
+    if(groups.count(static_cast<uint8_t>(dataWithGroup.at(i).at(2))) == 0)
+      groups.insert(static_cast<uint8_t>(dataWithGroup.at(i).at(2)));
+
+  std::default_random_engine gen;
+  std::uniform_real_distribution<float> dist(0.3, 0.9);
+
+  m_GroupsColors.resize(groups.size());
+
+  for(auto group : groups) {
+    m_GroupsColors.at(group - 1) = {dist(gen), dist(gen), dist(gen)};
+  }
+
   m_Colony = std::make_unique<SIM_HETERODATA::Colony>(m_GridM, m_GridN, m_AliveQnt, m_DeadQnt,
-                                                      m_VisionRadius, data);
+                                                      m_VisionRadius, dataWithGroup);
 
   m_Positions = std::make_unique<float[]>(m_PosSize);
   m_Indices = std::make_unique<uint[]>(m_IndSize);
@@ -72,9 +88,13 @@ void TestAntsHeterodata::init(std::vector<std::array<float, SIM_HETERODATA::data
 
     if(state == SIM_HETERODATA::GridState::Empty)
       r = g = b = a = 1.0f;
-    else if(state == SIM_HETERODATA::GridState::DeadFree)
-      r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(state == SIM_HETERODATA::GridState::AliveFree)
+    else if(state == SIM_HETERODATA::GridState::DeadFree) {
+      uint8_t group = m_Colony->getGroupAt(m, n);
+      r = m_GroupsColors[group - 1][0];
+      g = m_GroupsColors[group - 1][1];
+      b = m_GroupsColors[group - 1][2];
+      a = 1.0f;
+    } else if(state == SIM_HETERODATA::GridState::AliveFree)
       r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
     else if(state == SIM_HETERODATA::GridState::BothFree)
       r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
@@ -140,9 +160,13 @@ void TestAntsHeterodata::updateGrid() {
 
     if(state == SIM_HETERODATA::GridState::Empty)
       r = g = b = a = 1.0f;
-    else if(state == SIM_HETERODATA::GridState::DeadFree)
-      r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else if(!m_HideAlive) {
+    else if(state == SIM_HETERODATA::GridState::DeadFree) {
+      uint8_t group = m_Colony->getGroupAt(m, n);
+      r = m_GroupsColors[group - 1][0];
+      g = m_GroupsColors[group - 1][1];
+      b = m_GroupsColors[group - 1][2];
+      a = 1.0f;
+    } else if(!m_HideAlive) {
       if(state == SIM_HETERODATA::GridState::AliveFree)
         r = 0.0f, g = 1.0f, b = 0.0f, a = 1.0f;
       if(state == SIM_HETERODATA::GridState::AliveBusy)
@@ -153,9 +177,13 @@ void TestAntsHeterodata::updateGrid() {
         r = 1.0f, g = 1.0f, b = 0.0f, a = 1.0f;
     } else if(state == SIM_HETERODATA::GridState::AliveBusy or
               state == SIM_HETERODATA::GridState::AliveBusyDeadFree or
-              state == SIM_HETERODATA::GridState::BothFree)
-      r = 0.0f, g = 0.0f, b = 0.0f, a = 1.0f;
-    else
+              state == SIM_HETERODATA::GridState::BothFree) {
+      uint8_t group = m_Colony->getGroupAt(m, n);
+      r = m_GroupsColors[group - 1][0];
+      g = m_GroupsColors[group - 1][1];
+      b = m_GroupsColors[group - 1][2];
+      a = 1.0f;
+    } else
       r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
 
     for(u_char j = 0; j < 4; ++j) {
@@ -304,8 +332,8 @@ void TestAntsHeterodata::onImGuiRender() {
 TestAntsHeterodata::TestAntsHeterodata()
     : m_WinWidth{GE::GraphicsEngine::getInstance().getWindowWidth()},
       m_WinHeight{GE::GraphicsEngine::getInstance().getWindowHeight()},
-      m_GridM{100},
-      m_GridN{100},
+      m_GridM{50},
+      m_GridN{50},
       m_AliveQnt{(m_GridM * m_GridN) / (uint)64 + 1},
       m_DeadQnt{(m_GridM * m_GridN) / (uint)8 + 1},
       m_VisionRadius{1},
@@ -314,6 +342,7 @@ TestAntsHeterodata::TestAntsHeterodata()
       m_PosSize{0},
       m_Indices{},
       m_IndSize{0},
+      m_GroupsColors{},
       m_Initiated{false},
       m_Paused{true},
       m_HideAlive{false},
